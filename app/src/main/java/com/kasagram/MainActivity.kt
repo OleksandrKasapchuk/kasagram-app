@@ -11,6 +11,11 @@ import com.kasagram.auth.User
 import com.kasagram.post.Post
 import com.kasagram.post.PostFeed
 import com.kasagram.ui.theme.KasagramTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 id = 1,
                 user = author,
                 content = "Перший пост у Kasagram!",
-                media_url = null,
+                media_url = "https://res.cloudinary.com/ddothsprl/image/upload/v1774604052/iifxgqt1scbnfoszdg98.jpg",
                 likes_count = 10,
                 is_liked = false,
                 date_published = "щойно"
@@ -50,9 +55,38 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
+            // 1. НАЙЦЕНТРАЛЬНІША МАТРЬОШКА - ТЕМА
+            // Вона каже всім всередині: "Ми використовуємо кольори BgDark та AccentRed"
             KasagramTheme {
-                // Викликаємо нашу стрічку і передаємо список
-                PostFeed(posts = mockPosts)
+
+                // 2. КАРКАС (SCAFFOLD)
+                // Він каже: "Я тримаю BottomBar знизу, а контент посередині"
+                Scaffold(
+                    bottomBar = {
+                        KasagramBottomBar(
+                            isAuthenticated = true,
+                            unreadCount = 5,
+                            currentRoute = "index",
+                            onNavigate = { route -> println("Йдемо на $route") }
+                        )
+                    },
+                    // Вказуємо колір фону для самого Scaffold, щоб не було білих плям
+                    containerColor = MaterialTheme.colorScheme.background
+                ) { innerPadding ->
+
+                    // 3. ПОВЕРХНЯ (SURFACE) ТА КОНТЕНТ
+                    // innerPadding — це відступ, який Scaffold дає контенту,
+                    // щоб BottomBar не перекривав нижній пост.
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        // Викликаємо твою стрічку постів
+                        PostFeed(mockPosts)
+                    }
+                }
             }
         }
     }

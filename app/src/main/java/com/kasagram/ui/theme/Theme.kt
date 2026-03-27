@@ -1,8 +1,7 @@
 package com.kasagram.ui.theme
 
-import android.app.Activity
+
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -11,10 +10,15 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = AccentRed,           // Акцентний колір (кнопки, лайки)
+    background = BgDark,           // Головний фон екрана
+    surface = CardDark,            // Фон карток (постів)
+    outline = BorderColor,         // Рамки та лінії
+    onBackground = TextMain,       // Колір тексту на головному фоні
+    onSurface = TextMain,          // Колір тексту на картках
+    onSurfaceVariant = TextSecondary // Другорядний текст
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,12 +39,12 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun KasagramTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = true, // Можеш примусово поставити true, якщо хочеш тільки темну тему
+    dynamicColor: Boolean = false, // ВСТАВ ТУТ FALSE, щоб твої кольори працювали
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
+        // Якщо dynamicColor = false, цей блок пропуститься
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

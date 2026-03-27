@@ -1,4 +1,6 @@
 package com.kasagram.notification
 
-class models {
-}
+data class Notification (
+    val id: Int,
+    var is_read: Boolean,
+)

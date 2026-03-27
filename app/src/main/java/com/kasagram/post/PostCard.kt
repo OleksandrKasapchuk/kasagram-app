@@ -10,11 +10,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.kasagram.auth.User // Твої моделі
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.kasagram.R
+
 
 @Composable
 fun PostCard(post: Post) {
-    // Card - це контейнер з тінню та закругленими кутами
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +58,20 @@ fun PostCard(post: Post) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
+            // Card - це контейнер з тінню та закругленими кутами
+            AsyncImage(
+                // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
+                model = post.media_url ?: R.drawable.ihor,
+                contentDescription = "Post Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                contentScale = ContentScale.Crop, // Обрізає фото під розмір, щоб не було дірок
+                // 2. Поки фото вантажиться з інтернету, показуємо це:
+                placeholder = painterResource(R.drawable.loading_img),
+                // 3. Якщо сталася помилка завантаження:
+                error = painterResource(R.drawable.error_img)
+            )
             // Футер: Кнопки взаємодії
             Row(
                 modifier = Modifier.fillMaxWidth(),
