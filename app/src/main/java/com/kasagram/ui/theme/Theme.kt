@@ -12,13 +12,14 @@ import androidx.compose.ui.platform.LocalContext
 
 
 private val DarkColorScheme = darkColorScheme(
-    primary = AccentRed,           // Акцентний колір (кнопки, лайки)
+    primary = TextMain,           // Акцентний колір (кнопки, лайки)
     background = BgDark,           // Головний фон екрана
     surface = CardDark,            // Фон карток (постів)
     outline = BorderColor,         // Рамки та лінії
     onBackground = TextMain,       // Колір тексту на головному фоні
     onSurface = TextMain,          // Колір тексту на картках
-    onSurfaceVariant = TextSecondary // Другорядний текст
+    onSurfaceVariant = TextSecondary, // Другорядний текст
+    secondary = TextSecondary
 )
 
 private val LightColorScheme = lightColorScheme(

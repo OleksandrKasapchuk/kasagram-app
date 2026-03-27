@@ -3,6 +3,9 @@ package com.kasagram
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,10 +15,17 @@ import com.kasagram.post.Post
 import com.kasagram.post.PostFeed
 import com.kasagram.ui.theme.KasagramTheme
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 class MainActivity : ComponentActivity() {
@@ -83,8 +93,34 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        // Викликаємо твою стрічку постів
-                        PostFeed(mockPosts)
+                        Column {
+                            // Твій Хедер
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp) // Додай відступи, щоб текст не лип до країв
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "For you",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(modifier = Modifier.width(16.dp)) // Відступ між словами
+                                Text(
+                                    text = "Following",
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                                )
+                            }
+
+                            // Лінія-розділювач (опціонально, як в інсті)
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+
+                            // Тепер список постів піде ПІД хедером
+                            PostFeed(mockPosts)
+                        }
                     }
                 }
             }
