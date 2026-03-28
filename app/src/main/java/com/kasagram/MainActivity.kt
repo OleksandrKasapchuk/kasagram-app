@@ -12,14 +12,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.kasagram.auth.ProfileScreen
-import com.kasagram.chat.ChatListScreen
+import com.kasagram.auth.authGraph
+import com.kasagram.chat.chatGraph
 import com.kasagram.post.Index
 import com.kasagram.ui.theme.KasagramTheme
 
@@ -37,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         KasagramBottomBar(
-                            isAuthenticated = AuthSession.isAuthenticated,
+                            isAuthenticated = !AuthSession.token.isEmpty(),
                             unreadCount = 5,
                             currentRoute = currentRoute,
                             onNavigate = { route ->
@@ -77,31 +75,13 @@ class MainActivity : ComponentActivity() {
                                     Text("Тут буде створення поста", color = MaterialTheme.colorScheme.primary)
                                 }
                             }
-                            composable("chat_list") {
-                                ChatListScreen(author, chatList)
-                            }
 
                             composable("notifications") {
                                 Text("Тут сповіщення", color = MaterialTheme.colorScheme.primary)
                             }
 
-                            composable(
-                                route = "profile/{userId}",
-                                arguments = listOf(navArgument("userId") { type = NavType.IntType })
-                            ) { backStackEntry ->
-                                // 1. Дістаємо ID з аргументів маршруту
-                                val userId = backStackEntry.arguments?.getInt("userId") ?: author.id
-
-                                // 2. Шукаємо потрібного юзера в наших моках
-                                // (Припустимо, у тебе є список mockUsers, або шукаємо серед авторів постів)
-                                val userToShow = mockPosts.find { it.user.id == userId }?.user ?: author
-
-                                // 3. Фільтруємо пости саме для цього юзера
-                                val userPosts = mockPosts.filter { it.user.id == userId }
-
-                                // 4. Віддаємо дані в екран
-                                ProfileScreen(user = userToShow, userPosts = userPosts)
-                            }
+                            chatGraph(navController)
+                            authGraph(navController)
                         }
                     }
                 }

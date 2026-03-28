@@ -86,8 +86,9 @@ val mockPosts = listOf(
 )
 
 object AuthSession {
-    var currentUser: User = author // По замовчуванню це ти
-    val isAuthenticated: Boolean get() = true
+    var currentUser: User = author
+    var isAuthenticated: Boolean = true
+    var token: String = "dssw"
 }
 
 val chatList = listOf (

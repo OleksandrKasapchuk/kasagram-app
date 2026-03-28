@@ -1,5 +1,6 @@
 package com.kasagram.chat
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,26 +24,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.kasagram.AuthSession
 import com.kasagram.R
-import com.kasagram.auth.User
 
 
 @Composable
-fun ChatListScreen(user: User, chatList: List<Chat>) {
+fun ChatListScreen(chatList: List<Chat>, onChatClick: (Int) -> Unit) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(chatList) { chat ->
-            ChatCard(chat, user)
+            ChatCard(chat, onChatClick)
         }
     }
 }
 
 @Composable
-fun ChatCard(chat: Chat, user: User) {
-    val participant = chat.participants.find { it.id != user.id }
+fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
+    val participant = chat.participants.find { it.id != AuthSession.currentUser.id }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onChatClick(chat.id) }
+        ,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
