@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -17,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kasagram.auth.authGraph
 import com.kasagram.chat.chatGraph
+import com.kasagram.notification.NotificationListScreen
 import com.kasagram.post.postGraph
 import com.kasagram.ui.theme.KasagramTheme
 
@@ -63,7 +63,9 @@ class MainActivity : ComponentActivity() {
                             startDestination = "index",
                         ) {
                             composable("notifications") {
-                                Text("Тут сповіщення", color = MaterialTheme.colorScheme.primary)
+                                NotificationListScreen(notificationList,
+                                    onUserClick = {userId -> navController.navigate("profile/${userId}") },
+                                    onNotificationClick = {})
                             }
                             postGraph(navController)
                             chatGraph(navController)

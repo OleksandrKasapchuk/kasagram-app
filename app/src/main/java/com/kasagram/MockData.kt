@@ -3,6 +3,7 @@ package com.kasagram
 import com.kasagram.auth.User
 import com.kasagram.chat.Chat
 import com.kasagram.chat.Message
+import com.kasagram.notification.Notification
 import com.kasagram.post.Post
 
 val author = User(
@@ -110,4 +111,28 @@ val messagesList = listOf (
     Message(chatList[1], author, "Hello!", "01.01.01", true, null),
     Message(chatList[1], author2, "test user message!", "01.01.01", true, null),
     Message(chatList[1], author, "test!", "01.01.01", true, null),
+)
+
+val notificationList = listOf (
+    Notification(
+        id = 1,
+        actor = author3,
+        message = "sent you a message, View",
+        targetUrl = "chat/1",
+        timestamp = "now"
+    ),
+    Notification(
+        id = 2,
+        actor = author2,
+        message = "liked your post, View",
+        targetUrl = "post/1",
+        timestamp = "now"
+    ),
+    Notification(
+        id = 3,
+        actor = author3,
+        message = "commented your post, View",
+        targetUrl = "post/1",
+        timestamp = "now"
+    )
 )

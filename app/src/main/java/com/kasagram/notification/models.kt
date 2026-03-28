@@ -1,6 +1,12 @@
 package com.kasagram.notification
 
-data class Notification (
+import com.kasagram.auth.User
+
+data class Notification(
     val id: Int,
-    var is_read: Boolean,
+    val actor: User,
+    val message: String,
+    val targetUrl: String, // Аналог notification.get_url
+    val timestamp: String,
+    val isRead: Boolean = false
 )
