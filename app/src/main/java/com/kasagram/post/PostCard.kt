@@ -129,7 +129,7 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
                         // Міняємо іконку (заповнена / контур)
                         imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         // Міняємо колір (AccentRed / сірий)
-                        tint = if (isLiked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = if (isLiked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
                         contentDescription = if (isLiked) "Unlike" else "Like"
                     )
                 }

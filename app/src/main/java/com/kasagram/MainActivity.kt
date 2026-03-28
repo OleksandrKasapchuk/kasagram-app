@@ -3,7 +3,6 @@ package com.kasagram
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kasagram.auth.authGraph
 import com.kasagram.chat.chatGraph
-import com.kasagram.post.Index
+import com.kasagram.post.postGraph
 import com.kasagram.ui.theme.KasagramTheme
 
 
@@ -61,25 +60,12 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = "index", // Початкова сторінка (як '/')
+                            startDestination = "index",
                         ) {
-                            // Описуємо маршрути:
-                            composable("index") {
-                               Index(
-                                   posts = mockPosts,
-                                   onUserClick = { userId -> navController.navigate("profile/$userId")})
-                            }
-
-                            composable("add_post") {
-                                Box(Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                                    Text("Тут буде створення поста", color = MaterialTheme.colorScheme.primary)
-                                }
-                            }
-
                             composable("notifications") {
                                 Text("Тут сповіщення", color = MaterialTheme.colorScheme.primary)
                             }
-
+                            postGraph(navController)
                             chatGraph(navController)
                             authGraph(navController)
                         }

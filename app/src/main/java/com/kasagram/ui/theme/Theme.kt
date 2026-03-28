@@ -19,7 +19,9 @@ private val DarkColorScheme = darkColorScheme(
     onBackground = TextMain,       // Колір тексту на головному фоні
     onSurface = TextMain,          // Колір тексту на картках
     onSurfaceVariant = TextSecondary, // Другорядний текст
-    secondary = TextSecondary
+    secondary = TextSecondary,
+    tertiary = AccentRed,
+    primaryContainer = MessageBlue,
 )
 
 private val LightColorScheme = lightColorScheme(

@@ -2,6 +2,7 @@ package com.kasagram
 
 import com.kasagram.auth.User
 import com.kasagram.chat.Chat
+import com.kasagram.chat.Message
 import com.kasagram.post.Post
 
 val author = User(
@@ -103,4 +104,10 @@ val chatList = listOf (
         participants = listOf(author, author2),
         created="03.03.03",
     )
+)
+
+val messagesList = listOf (
+    Message(chatList[1], author, "Hello!", "01.01.01", true, null),
+    Message(chatList[1], author2, "test user message!", "01.01.01", true, null),
+    Message(chatList[1], author, "test!", "01.01.01", true, null),
 )
