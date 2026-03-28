@@ -161,7 +161,8 @@ fun PostCardPreview() {
         bio = "Doing some Kotlin magic",
         is_online = true,
         first_name = "Sasha",
-        last_name = "Dev"
+        last_name = "Dev",
+        last_seen = null,
     )
 
     val mockPost = Post(

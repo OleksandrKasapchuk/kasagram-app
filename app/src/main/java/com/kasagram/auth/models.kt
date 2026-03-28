@@ -7,7 +7,8 @@ data class User(
     var bio: String?,
     var is_online: Boolean,
     var first_name: String,
-    var last_name: String
+    var last_name: String,
+    var last_seen: String?
 )
 
 data class Subscription(
