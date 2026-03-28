@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         KasagramBottomBar(
-                            isAuthenticated = !AuthSession.token.isEmpty(),
+                            isAuthenticated = !AuthSession.token?.isEmpty()!!,
                             unreadCount = 5,
                             currentRoute = currentRoute,
                             onNavigate = { route ->

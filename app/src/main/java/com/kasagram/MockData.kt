@@ -39,7 +39,7 @@ val author3 = User(
     last_seen = "long time ago"
 )
 
-val mockPosts = listOf(
+val mockPosts = mutableListOf(
     Post(
         id = 1,
         user = author,
@@ -88,8 +88,8 @@ val mockPosts = listOf(
 )
 
 object AuthSession {
-    var currentUser: User = author
-    var token: String = ""
+    var currentUser: User? = author
+    var token: String? = ""
 }
 
 val chatList = listOf (

@@ -36,7 +36,7 @@ import com.kasagram.messagesList
 
 @Composable
 fun ChatDetailScreen(chat: Chat, onUserClick: (Int) -> Unit) {
-    val participant = chat.participants.find { it.id != AuthSession.currentUser.id }
+    val participant = chat.participants.find { it.id != AuthSession.currentUser?.id }
     LazyColumn {
         item() {
             Header(participant, onUserClick)
@@ -87,7 +87,7 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
 @Composable
 fun MessageCard(message: Message) {
     // 1. Визначаємо, чи це наше повідомлення
-    val isMine = message.sender.id == AuthSession.currentUser.id
+    val isMine = message.sender.id == AuthSession.currentUser?.id
 
     // 2. Використовуємо Row, щоб розставити повідомлення по боках
     Row(

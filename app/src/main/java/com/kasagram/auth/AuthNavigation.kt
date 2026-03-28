@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.kasagram.AuthSession
 import com.kasagram.author
 import com.kasagram.author2
 import com.kasagram.author3
@@ -42,4 +43,17 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
         )
     }
     composable("change_password") { ChangePasswordScreen() }
+    composable("logout") { logout(navController) }
+}
+
+fun logout(navController: NavController) {
+    // 1. Очищаємо сесію
+    AuthSession.token = ""
+    AuthSession.currentUser = null
+
+    // 2. Викидаємо юзера на екран логіну
+    navController.navigate("login") {
+        // Очищаємо всю історію переходів, щоб не можна було натиснути "назад" і повернутися в профіль
+        popUpTo(0) { inclusive = true }
+    }
 }
