@@ -30,4 +30,16 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
         // 4. Віддаємо дані в екран
         ProfileScreen(user = userToShow, userPosts = userPosts)
     }
+    composable("login") {
+        LoginScreen(
+            onRegisterClick = { navController.navigate("register") }
+        )
+    }
+
+    composable("register") {
+        RegistrationScreen(
+            onLoginClick = { navController.navigate("login") }
+        )
+    }
+    composable("change_password") { ChangePasswordScreen() }
 }

@@ -89,8 +89,7 @@ val mockPosts = listOf(
 
 object AuthSession {
     var currentUser: User = author
-    var isAuthenticated: Boolean = true
-    var token: String = "dssw"
+    var token: String = ""
 }
 
 val chatList = listOf (

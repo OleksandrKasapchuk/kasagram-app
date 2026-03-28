@@ -55,14 +55,12 @@ fun KasagramBottomBar(
         )
 
         if (isAuthenticated) {
-            // Messages (аналог твого {% else %} в шаблоні)
             NavigationBarItem(
                 selected = currentRoute == NavItem.Messages.route,
                 onClick = { onNavigate(NavItem.Messages.route) },
                 icon = { Icon(NavItem.Messages.icon, contentDescription = null) }
             )
 
-            // Notifications з "бейджиком" (unread_notification_count)
             NavigationBarItem(
                 selected = currentRoute == NavItem.Notifications.route,
                 onClick = { onNavigate(NavItem.Notifications.route) },
@@ -84,12 +82,11 @@ fun KasagramBottomBar(
                 icon = { Icon(NavItem.Profile.icon, contentDescription = null) }
             )
         } else {
-            // Login (якщо не авторизований)
+            // Login
             NavigationBarItem(
                 selected = currentRoute == "login",
                 onClick = { onNavigate("login") },
-                icon = { Icon(Icons.Default.Login, contentDescription = null) },
-                label = { Text("Login") }
+                icon = { Icon(Icons.Default.Login, contentDescription = null) }
             )
         }
     }

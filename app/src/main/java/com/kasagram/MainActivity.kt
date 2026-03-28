@@ -11,12 +11,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kasagram.auth.authGraph
 import com.kasagram.chat.chatGraph
-import com.kasagram.notification.NotificationListScreen
+import com.kasagram.notification.notificationGraph
 import com.kasagram.post.postGraph
 import com.kasagram.ui.theme.KasagramTheme
 
@@ -46,12 +45,8 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     },
-                    // Вказуємо колір фону для самого Scaffold, щоб не було білих плям
                     containerColor = MaterialTheme.colorScheme.background
                 ) { innerPadding ->
-                    // 3. ПОВЕРХНЯ (SURFACE) ТА КОНТЕНТ
-                    // innerPadding — це відступ, який Scaffold дає контенту,
-                    // щоб BottomBar не перекривав нижній пост.
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
@@ -62,11 +57,7 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = "index",
                         ) {
-                            composable("notifications") {
-                                NotificationListScreen(notificationList,
-                                    onUserClick = {userId -> navController.navigate("profile/${userId}") },
-                                    onNotificationClick = {})
-                            }
+                            notificationGraph(navController)
                             postGraph(navController)
                             chatGraph(navController)
                             authGraph(navController)
