@@ -3,29 +3,24 @@ package com.kasagram
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.kasagram.auth.User
-import com.kasagram.post.Post
-import com.kasagram.post.PostFeed
-import com.kasagram.ui.theme.KasagramTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.kasagram.auth.ProfileScreen
+import com.kasagram.auth.User
+import com.kasagram.post.Index
+import com.kasagram.post.Post
+import com.kasagram.ui.theme.KasagramTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -65,25 +60,32 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            // 1. НАЙЦЕНТРАЛЬНІША МАТРЬОШКА - ТЕМА
-            // Вона каже всім всередині: "Ми використовуємо кольори BgDark та AccentRed"
+            // Каже всім всередині: "Ми використовуємо кольори BgDark та AccentRed"
             KasagramTheme {
 
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route ?: "index"
                 // 2. КАРКАС (SCAFFOLD)
-                // Він каже: "Я тримаю BottomBar знизу, а контент посередині"
                 Scaffold(
                     bottomBar = {
                         KasagramBottomBar(
                             isAuthenticated = true,
                             unreadCount = 5,
-                            currentRoute = "index",
-                            onNavigate = { route -> println("Йдемо на $route") }
+                            currentRoute = currentRoute,
+                            onNavigate = { route ->
+                                // ТЕПЕР ЦЕ ПРАЦЮЄ:
+                                navController.navigate(route) {
+                                    // Щоб не накопичувати купу сторінок в пам'яті:
+                                    popUpTo(navController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     },
                     // Вказуємо колір фону для самого Scaffold, щоб не було білих плям
                     containerColor = MaterialTheme.colorScheme.background
                 ) { innerPadding ->
-
                     // 3. ПОВЕРХНЯ (SURFACE) ТА КОНТЕНТ
                     // innerPadding — це відступ, який Scaffold дає контенту,
                     // щоб BottomBar не перекривав нижній пост.
@@ -93,52 +95,36 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        Column {
-                            // Твій Хедер
-                            Row(
-                                modifier = Modifier
-                                    .padding(16.dp) // Додай відступи, щоб текст не лип до країв
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "For you",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(modifier = Modifier.width(16.dp)) // Відступ між словами
-                                Text(
-                                    text = "Following",
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 18.sp,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
-                                )
+                        NavHost(
+                            navController = navController,
+                            startDestination = "index", // Початкова сторінка (як '/')
+                        ) {
+                            // Описуємо маршрути:
+                            composable("index") {
+                               Index(posts = mockPosts)
                             }
 
-                            // Лінія-розділювач (опціонально, як в інсті)
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                            composable("add_post") {
+                                Box(Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                    Text("Тут буде створення поста", color = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                            composable("chat_list") {
+                                Text("Тут чат", color = MaterialTheme.colorScheme.primary)
+                            }
 
-                            // Тепер список постів піде ПІД хедером
-                            PostFeed(mockPosts)
+                            composable("notifications") {
+                                Text("Тут сповіщення", color = MaterialTheme.colorScheme.primary)
+                            }
+
+                            composable("user-info") {
+                                ProfileScreen(user = author)
+                            }
+
                         }
                     }
                 }
             }
         }
-    }
-}
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    KasagramTheme {
-        Greeting("Android")
     }
 }

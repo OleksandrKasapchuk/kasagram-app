@@ -71,7 +71,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    // УВАГА: material-icons-extended додає +2-5 МБ до APK. 
-    // Якщо тобі потрібно лише кілька іконок, краще їх завантажити як Vector Asset
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 }
