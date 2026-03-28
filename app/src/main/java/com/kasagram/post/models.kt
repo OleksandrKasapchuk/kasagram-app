@@ -15,8 +15,9 @@ data class Post(
 
 data class Comment(
     val id: Int,
-    val post: Post,
-    val user: User, // Об'єкт класу User як поле
-    val text: String,
-    val date_published: String
+    val user: User,
+    val content: String,
+    val datePublished: String,
+    val replies: List<Comment> = emptyList(),
+    val parentId: Int? = null
 )

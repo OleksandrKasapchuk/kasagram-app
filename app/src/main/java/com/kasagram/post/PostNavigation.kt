@@ -2,7 +2,9 @@ package com.kasagram.post
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.kasagram.AuthSession
 import com.kasagram.author
 import com.kasagram.mockPosts
@@ -45,5 +47,34 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
                 }
             }
         )
+    }
+    composable(
+        route = "post_detail/{postId}",
+        arguments = listOf(navArgument("postId") { type = NavType.IntType })
+    ) { backStackEntry ->
+        // 1. Отримуємо ID з параметрів шляху
+        val postId = backStackEntry.arguments?.getInt("postId") ?: 0
+
+        // 2. Шукаємо пост у нашому списку (як Post.objects.get(pk=postId))
+        val post = mockPosts.find { it.id == postId }
+
+        if (post != null) {
+            PostDetailScreen(
+                post = post,
+                comments = emptyList(), // Поки що пустий список або твої mockComments
+                onLikeClick = {
+                    // Логіка лайка (імітація)
+                    println("Liked post ${post.id}")
+                },
+                onDeletePost = {
+                    mockPosts.remove(post)
+                    navController.popBackStack()
+                },
+                onSendComment = { text, parentId ->
+                    println("Sending comment: $text to parent: $parentId")
+                    // Тут буде створення об'єкта Comment і додавання в список
+                }
+            )
+        }
     }
 }

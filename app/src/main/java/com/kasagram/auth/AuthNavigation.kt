@@ -29,7 +29,7 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
         val userPosts = mockPosts.filter { it.user.id == userId }
 
         // 4. Віддаємо дані в екран
-        ProfileScreen(user = userToShow, userPosts = userPosts)
+        ProfileScreen(user = userToShow, userPosts = userPosts, navController)
     }
     composable("login") {
         LoginScreen(

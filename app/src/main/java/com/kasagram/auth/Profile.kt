@@ -1,5 +1,6 @@
 package com.kasagram.auth
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,13 +23,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kasagram.R
 import com.kasagram.post.Post
 
 
 @Composable
-fun ProfileScreen(user: User, userPosts: List<Post>) {
+fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavController) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // 1. ШАПКА (Аватар + Стати)
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -63,7 +65,8 @@ fun ProfileScreen(user: User, userPosts: List<Post>) {
                     contentDescription = null,
                     modifier = Modifier
                         .aspectRatio(1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .clickable{navController.navigate("post_detail/${post.id}")},
                     contentScale = ContentScale.Crop
                 )
             }

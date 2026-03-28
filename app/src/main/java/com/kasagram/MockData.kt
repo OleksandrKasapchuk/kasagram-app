@@ -89,7 +89,7 @@ val mockPosts = mutableListOf(
 
 object AuthSession {
     var currentUser: User? = author
-    var token: String? = ""
+    var token: String? = "afafx"
 }
 
 val chatList = listOf (

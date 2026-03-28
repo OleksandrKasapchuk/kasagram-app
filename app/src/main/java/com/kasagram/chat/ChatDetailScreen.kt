@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +20,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,20 +38,30 @@ import com.kasagram.AuthSession
 import com.kasagram.R
 import com.kasagram.auth.User
 import com.kasagram.messagesList
+import com.kasagram.post.MessageInputField
 
 @Composable
 fun ChatDetailScreen(chat: Chat, onUserClick: (Int) -> Unit) {
     val participant = chat.participants.find { it.id != AuthSession.currentUser?.id }
-    LazyColumn {
-        item() {
-            Header(participant, onUserClick)
-        }
-        val chatMessages = messagesList.filter { it.chat.id == chat.id }
-        items(chatMessages) { message ->
-            MessageCard(message)
-        }
-    }
+    var chatMessage by remember { mutableStateOf("") }
+    Column (modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            item {
+                Header(participant, onUserClick)
+            }
+            val chatMessages = messagesList.filter { it.chat.id == chat.id }
 
+            items(chatMessages) { message ->
+                MessageCard(message)
+            }
+        }
+        MessageInputField(
+            value = chatMessage,
+            onValueChange = { chatMessage = it },
+            onSendClick = { /* API Send Message to Chat */ },
+            placeholder = "Message..."
+        )
+    }
 }
 
 @Composable
