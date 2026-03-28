@@ -12,10 +12,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.kasagram.auth.ProfileScreen
 import com.kasagram.chat.ChatListScreen
 import com.kasagram.post.Index
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         KasagramBottomBar(
-                            isAuthenticated = true,
+                            isAuthenticated = AuthSession.isAuthenticated,
                             unreadCount = 5,
                             currentRoute = currentRoute,
                             onNavigate = { route ->
@@ -65,7 +67,9 @@ class MainActivity : ComponentActivity() {
                         ) {
                             // Описуємо маршрути:
                             composable("index") {
-                               Index(posts = mockPosts)
+                               Index(
+                                   posts = mockPosts,
+                                   onUserClick = { userId -> navController.navigate("profile/$userId")})
                             }
 
                             composable("add_post") {
@@ -81,11 +85,23 @@ class MainActivity : ComponentActivity() {
                                 Text("Тут сповіщення", color = MaterialTheme.colorScheme.primary)
                             }
 
-                            composable("user-info") {
-                                val userPosts = mockPosts.filter { post -> post.user.id == author.id }
-                                ProfileScreen(user = author, userPosts = userPosts)
-                            }
+                            composable(
+                                route = "profile/{userId}",
+                                arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                            ) { backStackEntry ->
+                                // 1. Дістаємо ID з аргументів маршруту
+                                val userId = backStackEntry.arguments?.getInt("userId") ?: author.id
 
+                                // 2. Шукаємо потрібного юзера в наших моках
+                                // (Припустимо, у тебе є список mockUsers, або шукаємо серед авторів постів)
+                                val userToShow = mockPosts.find { it.user.id == userId }?.user ?: author
+
+                                // 3. Фільтруємо пости саме для цього юзера
+                                val userPosts = mockPosts.filter { it.user.id == userId }
+
+                                // 4. Віддаємо дані в екран
+                                ProfileScreen(user = userToShow, userPosts = userPosts)
+                            }
                         }
                     }
                 }

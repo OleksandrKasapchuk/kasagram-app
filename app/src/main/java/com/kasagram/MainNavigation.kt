@@ -1,8 +1,19 @@
 package com.kasagram
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.AddBox
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -13,7 +24,7 @@ sealed class NavItem(val title: String, val icon: ImageVector, val route: String
     object Add : NavItem("", Icons.Default.AddBox, "add_post")
     object Messages : NavItem("", Icons.Default.Chat, "chat_list")
     object Notifications : NavItem("", Icons.Default.Notifications, "notifications")
-    object Profile : NavItem("", Icons.Default.Person, "user-info")
+    object Profile : NavItem("", Icons.Default.Person, "profile/${AuthSession.currentUser.id}")
 }
 
 @Composable

@@ -22,15 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Index(posts: List<Post>) {
+fun Index(posts: List<Post>, onUserClick: (Int) -> Unit) {
     if (posts.isEmpty()) {
         // Якщо постів немає, показуємо заглушку
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("Постів поки немає. Підпишіться на когось!")
         }
     } else {
-        // Якщо є — показуємо стрічку з хедером всередині
-        PostFeed(posts)
+        PostFeed(posts, onUserClick)
     }
 }
 
@@ -63,7 +62,7 @@ fun Header() {
 }
 
 @Composable
-fun PostFeed(posts: List<Post>){
+fun PostFeed(posts: List<Post>, onUserClick: (Int) -> Unit){
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 16.dp)
@@ -75,7 +74,7 @@ fun PostFeed(posts: List<Post>){
 
         // 2. Потім малюємо всі пости
         items(posts) { post ->
-            PostCard(post = post)
+            PostCard(post = post, onUserClick)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.kasagram.post
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,16 +31,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.kasagram.R
-import com.kasagram.auth.User
 
 
 @Composable
-fun PostCard(post: Post) {
+fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
     var isLiked by remember { mutableStateOf(post.is_liked) }
     var likesCount by remember { mutableStateOf(post.likes_count) }
 
@@ -59,7 +58,9 @@ fun PostCard(post: Post) {
                 .fillMaxWidth()
         ) {
             // Шапка поста: Автор
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                modifier = Modifier.clickable { onUserClick(post.user.id) }
+            ) {
                 AsyncImage(
                     // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
                     model = post.user.avatar_url ?: R.drawable.def_av,
@@ -147,32 +148,4 @@ fun PostCard(post: Post) {
             }
         }
     }
-}
-
-// Потужна штука для розробника: Прев'ю прямо в студії
-@Preview(showBackground = true, name = "Post Card Preview")
-@Composable
-fun PostCardPreview() {
-    // Створюємо фейкові дані, щоб не запускати сервер
-    val mockUser = User(
-        id = 1,
-        username = "sasha_ukraine",
-        avatar_url = null,
-        bio = "Doing some Kotlin magic",
-        is_online = true,
-        first_name = "Sasha",
-        last_name = "Dev",
-        last_seen = null,
-    )
-
-    val mockPost = Post(
-        id = 101,
-        user = mockUser,
-        content = "Нарешті розібрався з імпортами в Котліні! Тепер дизайн виглядає як справжній додаток. 🚀",
-        media_url = null,
-        date_published = "2026-03-26",
-        likes_count = 42,
-        is_liked = true
-    )
-    PostCard(post = mockPost)
 }
