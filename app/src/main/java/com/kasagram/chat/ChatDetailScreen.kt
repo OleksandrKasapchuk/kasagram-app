@@ -74,7 +74,7 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
                 .clickable { participant?.let { onUserClick(it.id) } }
         ) {
             AsyncImage(
-                model = participant?.avatar_url ?: R.drawable.def_av,
+                model = participant?.avatarUrl ?: R.drawable.def_av,
                 contentDescription = "User avatar",
                 modifier = Modifier
                     .clip(CircleShape)

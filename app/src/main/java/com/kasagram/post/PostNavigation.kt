@@ -13,7 +13,7 @@ import com.kasagram.mockPosts
 fun NavGraphBuilder.postGraph(navController: NavController) {
     composable("index") {
         Index(
-            posts = mockPosts,
+            viewModel = PostViewModel(),
             onUserClick = { userId -> navController.navigate("profile/$userId")})
     }
 
@@ -31,11 +31,11 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
                     // Автором ставимо поточного залогіненого юзера
                     user = AuthSession.currentUser ?: author,
                     // ВАЖЛИВО: AsyncImage в Index спокійно прочитає цей imageUri
-                    media_url = imageUri,
+                    mediaUrl = imageUri,
                     content = caption,
-                    date_published = "now",
-                    is_liked = false,
-                    likes_count = 0
+                    datePublished = "now",
+                    isLiked = false,
+                    likesCount = 0
                 )
 
                 // 3. ДОДАЄМО В ПОЧАТОК СПИСКУ (як в Instagram)

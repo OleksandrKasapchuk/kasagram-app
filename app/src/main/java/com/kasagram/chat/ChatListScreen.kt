@@ -61,7 +61,7 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                 AsyncImage(
                     // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
-                    model = participant?.avatar_url ?: R.drawable.def_av,
+                    model = participant?.avatarUrl ?: R.drawable.def_av,
                     contentDescription = "User avatar",
                     modifier = Modifier
                         .clip(CircleShape)

@@ -73,7 +73,7 @@ fun PostDetailScreen(
         LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
             item {
                 AsyncImage(
-                    model = post.media_url,
+                    model = post.mediaUrl,
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
                     contentScale = ContentScale.Crop
@@ -176,7 +176,7 @@ fun CommentItem(comment: Comment, onReplyClick: () -> Unit) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Row {
             AsyncImage(
-                model = comment.user.avatar_url,
+                model = comment.user.avatarUrl,
                 contentDescription = null,
                 modifier = Modifier.size(36.dp).clip(CircleShape)
             )
@@ -207,7 +207,7 @@ fun CommentItem(comment: Comment, onReplyClick: () -> Unit) {
         comment.replies.forEach { reply ->
             Row(modifier = Modifier.padding(start = 48.dp, top = 12.dp)) {
                 AsyncImage(
-                    model = reply.user.avatar_url,
+                    model = reply.user.avatarUrl,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp).clip(CircleShape)
                 )

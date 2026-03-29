@@ -39,8 +39,8 @@ import com.kasagram.R
 
 @Composable
 fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
-    var isLiked by remember { mutableStateOf(post.is_liked) }
-    var likesCount by remember { mutableStateOf(post.likes_count) }
+    var isLiked by remember { mutableStateOf(post.isLiked) }
+    var likesCount by remember { mutableStateOf(post.likesCount) }
 
     Card(
         modifier = Modifier
@@ -63,7 +63,7 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
             ) {
                 AsyncImage(
                     // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
-                    model = post.user.avatar_url ?: R.drawable.def_av,
+                    model = post.user.avatarUrl ?: R.drawable.def_av,
                     contentDescription = "User avatar",
                     modifier = Modifier
                         .clip(CircleShape)
@@ -90,7 +90,7 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
             // Card - це контейнер з тінню та закругленими кутами
             AsyncImage(
                 // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
-                model = post.media_url ?: R.drawable.ihor,
+                model = post.mediaUrl,
                 contentDescription = "Post Image",
                 modifier = Modifier
                     .fillMaxWidth()

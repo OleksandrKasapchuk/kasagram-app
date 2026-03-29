@@ -7,9 +7,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.kasagram.AuthSession
 import com.kasagram.author
-import com.kasagram.author2
-import com.kasagram.author3
 import com.kasagram.mockPosts
+
+//import com.kasagram.author2
+//import com.kasagram.author3
+//import com.kasagram.mockPosts
 
 
 fun NavGraphBuilder.authGraph(navController: NavController) {
@@ -21,8 +23,8 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
         val userId = backStackEntry.arguments?.getInt("userId") ?: author.id
 
         // Тимчасовий список усіх юзерів для пошуку (поки немає бази даних)
-        val allUsers = listOf(author, author2, author3)
-
+//        val allUsers = listOf(author, author2, author3)
+        val allUsers = listOf(author)
         // Тепер шукаємо серед УСІХ юзерів, а не тільки тих, хто зробив пост
         val userToShow = allUsers.find { it.id == userId } ?: author
         // 3. Фільтруємо пости саме для цього юзера

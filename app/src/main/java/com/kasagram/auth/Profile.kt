@@ -35,7 +35,7 @@ fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavControlle
         // 1. ШАПКА (Аватар + Стати)
         Row(verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = user.avatar_url ?: R.drawable.def_av,
+                model = user.avatarUrl ?: R.drawable.def_av,
                 contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)
@@ -47,7 +47,7 @@ fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavControlle
         Spacer(modifier = Modifier.height(12.dp))
 
         // 2. БІО
-        Text(text = "${user.first_name} ${user.last_name}", fontWeight = FontWeight.Bold)
+        Text(text = "${user.firstName} ${user.lastName}", fontWeight = FontWeight.Bold)
         Text(text = user.bio ?: "")
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -61,7 +61,7 @@ fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavControlle
         ) {
             items(userPosts) { post ->
                 AsyncImage(
-                    model = post.media_url ?: R.drawable.def_av,
+                    model = post.mediaUrl ?: R.drawable.def_av,
                     contentDescription = null,
                     modifier = Modifier
                         .aspectRatio(1f)

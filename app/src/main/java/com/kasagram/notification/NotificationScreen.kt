@@ -83,7 +83,7 @@ fun NotificationItem(
     ) {
         // Аватар (клікабельний)
         AsyncImage(
-            model = notification.actor.avatar_url ?: R.drawable.def_av,
+            model = notification.actor.avatarUrl ?: R.drawable.def_av,
             contentDescription = null,
             modifier = Modifier
                 .size(50.dp)
