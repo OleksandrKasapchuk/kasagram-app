@@ -61,7 +61,7 @@ fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavControlle
         ) {
             items(userPosts) { post ->
                 AsyncImage(
-                    model = post.mediaUrl ?: R.drawable.def_av,
+                    model = post.mediaUrl,
                     contentDescription = null,
                     modifier = Modifier
                         .aspectRatio(1f)

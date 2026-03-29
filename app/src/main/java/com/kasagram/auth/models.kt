@@ -1,6 +1,7 @@
 package com.kasagram.auth
 
 import com.google.gson.annotations.SerializedName
+import com.kasagram.post.Post
 
 data class User(
     val id: Int,
@@ -20,7 +21,12 @@ data class User(
     var lastName: String,
 
     @SerializedName("last_seen")
-    var lastSeen: String?
+    var lastSeen: String?,
+
+    @SerializedName("user_posts")
+    val userPosts: List<Post> = emptyList(), // Список постів від бекенда
+    @SerializedName("posts_count")
+    val postsCount: Int = 0
 )
 
 data class Subscription(
