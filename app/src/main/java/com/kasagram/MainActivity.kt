@@ -23,7 +23,7 @@ import com.kasagram.ui.theme.KasagramTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        AuthSession.init(applicationContext)
         setContent {
             KasagramTheme {
                 val navController = rememberNavController()
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         KasagramBottomBar(
-                            isAuthenticated = !AuthSession.token?.isEmpty()!!,
+                            isAuthenticated = !AuthSession.token.isNullOrEmpty(),
                             unreadCount = 5,
                             currentRoute = currentRoute,
                             onNavigate = { route ->

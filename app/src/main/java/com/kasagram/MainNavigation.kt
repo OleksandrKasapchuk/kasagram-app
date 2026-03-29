@@ -24,7 +24,7 @@ sealed class NavItem(val title: String, val icon: ImageVector, val route: String
     object Add : NavItem("", Icons.Default.AddBox, "add_post")
     object Messages : NavItem("", Icons.Default.Chat, "chat_list")
     object Notifications : NavItem("", Icons.Default.Notifications, "notifications")
-    object Profile : NavItem("", Icons.Default.Person, "profile/${AuthSession.currentUser?.id}")
+    object Profile : NavItem("", Icons.Default.Person, "profile/${AuthSession.userId}")
 }
 
 @Composable

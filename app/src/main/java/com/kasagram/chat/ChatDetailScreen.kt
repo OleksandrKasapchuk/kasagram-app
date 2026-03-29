@@ -42,7 +42,7 @@ import com.kasagram.post.MessageInputField
 
 @Composable
 fun ChatDetailScreen(chat: Chat, onUserClick: (Int) -> Unit) {
-    val participant = chat.participants.find { it.id != AuthSession.currentUser?.id }
+    val participant = chat.participants.find { it.id != AuthSession.userId }
     var chatMessage by remember { mutableStateOf("") }
     Column (modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.weight(1f)) {
@@ -102,7 +102,7 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
 @Composable
 fun MessageCard(message: Message) {
     // 1. Визначаємо, чи це наше повідомлення
-    val isMine = message.sender.id == AuthSession.currentUser?.id
+    val isMine = message.sender.id == AuthSession.userId
 
     // 2. Використовуємо Row, щоб розставити повідомлення по боках
     Row(

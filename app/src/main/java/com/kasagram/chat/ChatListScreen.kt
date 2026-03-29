@@ -39,7 +39,7 @@ fun ChatListScreen(chatList: List<Chat>, onChatClick: (Int) -> Unit) {
 
 @Composable
 fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
-    val participant = chat.participants.find { it.id != AuthSession.currentUser?.id }
+    val participant = chat.participants.find { it.id != AuthSession.userId }
     Card(
         modifier = Modifier
             .fillMaxWidth()
