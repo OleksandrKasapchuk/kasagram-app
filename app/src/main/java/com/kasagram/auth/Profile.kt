@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -30,19 +31,29 @@ import com.kasagram.post.Post
 
 @Composable
 fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavController) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
+        // 1. Додаємо хедер як один елемент, що займає всі 3 колонки (span)
+        item(span = { GridItemSpan(3) }) {
+            Column {
+                ProfileHeader(user)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
 
-        ProfileHeader(user)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
+        // 2. Логіка відображення постів або тексту
         if (userPosts.isEmpty()) {
-            Text("У цього користувача ще немає постів")
+            item(span = { GridItemSpan(3) }) {
+                Text(
+                    text = "У цього користувача ще немає постів",
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+            }
         } else {
-            LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-                items(userPosts) { post ->
-                    PostThumbnail(post, navController) // Твій компонент для прев'ю поста
-                }
+            items(userPosts) { post ->
+                PostThumbnail(post, navController)
             }
         }
     }

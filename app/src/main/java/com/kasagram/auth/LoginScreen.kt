@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.kasagram.FormField
 import com.kasagram.GenericFormState
 import com.kasagram.LoginRequest
+import com.kasagram.RegisterRequest
 
 
 @Composable
@@ -76,7 +77,7 @@ fun LoginScreen(navController: NavController, onRegisterClick: () -> Unit, authV
 }
 
 @Composable
-fun RegistrationScreen(onLoginClick: () -> Unit) {
+fun RegistrationScreen(navController: NavController, authViewModel: AuthViewModel = viewModel(), onLoginClick: () -> Unit) {
     // 1. Ініціалізуємо форму (як form = RegistrationForm())
     val form = remember {
         GenericFormState(listOf("username", "first_name", "last_name", "email", "password", "bio"))
@@ -98,11 +99,31 @@ fun RegistrationScreen(onLoginClick: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* Відправка на API */ },
-            enabled = form.isValid(), // Кнопка активна тільки якщо все заповнено
+            onClick = {
+                val registerData = RegisterRequest(
+                    username = form.getValue("username"),
+                    password = form.getValue("password"),
+                    first_name = form.getValue("first_name"),
+                    last_name = form.getValue("last_name"),
+                    email = form.getValue("email"),
+                    bio = form.getValue("bio")
+                )
+                // Викликаємо логіку з ViewModel
+                authViewModel.register(registerData) {
+                    // Цей блок виконається тільки при успіху (onSuccess)
+                    navController.navigate("index") {
+                        popUpTo("register") { inclusive = true } // Видаляємо екран логіну з бекстеку
+                    }
+                }
+            },
+            enabled = form.isValid() && !authViewModel.isLoading, // Блокуємо кнопку при завантаженні
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Register")
+            if (authViewModel.isLoading) {
+                Text("Loading...") // Тут можна поставити CircularProgressIndicator
+            } else {
+                Text("Register")
+            }
         }
         TextButton(onClick = onLoginClick) {
             Text("Already have an account? Log in", color = MaterialTheme.colorScheme.primary)

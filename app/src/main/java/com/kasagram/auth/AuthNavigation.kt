@@ -44,6 +44,7 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
 
     composable("register") {
         RegistrationScreen(
+            navController,
             onLoginClick = { navController.navigate("login") }
         )
     }

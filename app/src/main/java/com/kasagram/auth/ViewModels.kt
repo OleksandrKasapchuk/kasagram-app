@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kasagram.AuthSession
 import com.kasagram.LoginRequest
+import com.kasagram.RegisterRequest
 import com.kasagram.RetrofitClient
 import kotlinx.coroutines.launch
 
@@ -21,6 +22,24 @@ class AuthViewModel : ViewModel() {
             errorMessage = null
             try {
                 val response = RetrofitClient.instance.login(request)
+
+                // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
+                AuthSession.updateSession(response.token, response.user_id)
+
+                onSuccess() // Переходимо на головний екран
+            } catch (e: Exception) {
+                errorMessage = "Помилка: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+    fun register(request: RegisterRequest, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                val response = RetrofitClient.instance.register(request)
 
                 // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
                 AuthSession.updateSession(response.token, response.user_id)

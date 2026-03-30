@@ -20,12 +20,24 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 // Описуємо пункт меню як об'єкт
-sealed class NavItem(val title: String, val icon: ImageVector, val route: String) {
-    object Home : NavItem("", Icons.Default.Home, "index")
-    object Add : NavItem("", Icons.Default.AddBox, "add_post")
-    object Messages : NavItem("", Icons.Default.Chat, "chat_list")
-    object Notifications : NavItem("", Icons.Default.Notifications, "notifications")
-    object Profile : NavItem("", Icons.Default.Person, "profile/${AuthSession.userId}")
+sealed class NavItem(val title: String, val icon: ImageVector) {
+    abstract val route: String
+
+    object Home : NavItem("", Icons.Default.Home) {
+        override val route = "index"
+    }
+    object Add : NavItem("", Icons.Default.AddBox) {
+        override val route = "add_post"
+    }
+    object Messages : NavItem("", Icons.Default.Chat) {
+        override val route = "chat_list"
+    }
+    object Notifications : NavItem("", Icons.Default.Notifications) {
+        override val route = "notifications"
+    }
+    object Profile : NavItem("", Icons.Default.Person) {
+        override val route: String
+            get() = "profile/${AuthSession.userId}"
 }
 
 @Composable
@@ -49,17 +61,17 @@ fun KasagramBottomBar(
 
         // Завжди показуємо Add
         NavigationBarItem(
-            selected = currentRoute == NavItem.Add.route,
-            onClick = { onNavigate(NavItem.Add.route) },
-            icon = { Icon(NavItem.Add.icon, contentDescription = null) },
-            label = { Text(NavItem.Add.title) }
+            selected = currentRoute == Add.route,
+            onClick = { onNavigate(Add.route) },
+            icon = { Icon(Add.icon, contentDescription = null) },
+            label = { Text(Add.title) }
         )
 
         if (isAuthenticated) {
             NavigationBarItem(
-                selected = currentRoute == NavItem.Messages.route,
-                onClick = { onNavigate(NavItem.Messages.route) },
-                icon = { Icon(NavItem.Messages.icon, contentDescription = null) }
+                selected = currentRoute == Messages.route,
+                onClick = { onNavigate(Messages.route) },
+                icon = { Icon(Messages.icon, contentDescription = null) }
             )
 
             NavigationBarItem(
@@ -78,9 +90,9 @@ fun KasagramBottomBar(
 
             // Profile
             NavigationBarItem(
-                selected = currentRoute == NavItem.Profile.route,
-                onClick = { onNavigate(NavItem.Profile.route) },
-                icon = { Icon(NavItem.Profile.icon, contentDescription = null) }
+                selected = currentRoute == Profile.route,
+                onClick = { onNavigate(Profile.route) },
+                icon = { Icon(Profile.icon, contentDescription = null) }
             )
             // Logout
             NavigationBarItem(
@@ -98,4 +110,5 @@ fun KasagramBottomBar(
             )
         }
     }
+}
 }
