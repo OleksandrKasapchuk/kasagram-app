@@ -1,5 +1,8 @@
 package com.kasagram
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.kasagram.auth.User
 import com.kasagram.post.Post
 import okhttp3.Interceptor
@@ -21,9 +24,6 @@ interface ApiService {
     @POST("register/")
     suspend fun register(@Body request: RegisterRequest): AuthResponse
 
-    @GET("ping/")
-    suspend fun getPing(): PingResponse
-
     @GET("posts/")
     suspend fun getPosts(@Query("page") page: Int): PaginatedResponse<Post>
 
@@ -39,16 +39,14 @@ object RetrofitClient {
     private const val DEBUG_URL = "http://10.0.2.2:8000/api/"
     private const val PROD_URL = "https://kasagram.onrender.com/api/"
 
-    private const val IS_DEBUG = true // Потім зміниш на false перед релізом
+    private const val IS_DEBUG = true
 
-    // 1. Створюємо перехоплювач, який лізе в твій AuthSession
     private val authInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
-        val token = AuthSession.token // Беремо токен прямо з твого об'єкта
+        val token = AuthSession.token
 
         val requestBuilder = originalRequest.newBuilder()
 
-        // Якщо токен є — додаємо заголовок, який чекає Django
         if (!token.isNullOrBlank()) {
             requestBuilder.addHeader("Authorization", "Token $token")
         }
@@ -57,10 +55,8 @@ object RetrofitClient {
         chain.proceed(request)
     }
 
-    // 2. Налаштовуємо клієнт з цим перехоплювачем
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
-        // Додамо логування, щоб ти бачив у консолі, що летить на сервер
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }).build()
@@ -70,16 +66,13 @@ object RetrofitClient {
 
         Retrofit.Builder()
             .baseUrl(baseUrl)
-            .client(okHttpClient) // ПІДКЛЮЧАЄМО КЛІЄНТ ТУТ
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
     }
 }
 
-data class PingResponse(
-    val status: String
-)
 
 data class PaginatedResponse<T>(
     val count: Int,
@@ -88,7 +81,6 @@ data class PaginatedResponse<T>(
     val results: List<T>
 )
 
-// Те, що ми шлемо на сервер
 data class LoginRequest(
     val username: String,
     val password: String
@@ -103,7 +95,6 @@ data class RegisterRequest(
     val bio: String
 )
 
-// Те, що Django (наш CustomAuthToken) віддає у відповідь
 data class AuthResponse(
     val token: String,
     val user_id: Int,
@@ -117,26 +108,34 @@ object AuthSession {
 
     private lateinit var prefs: android.content.SharedPreferences
 
-    // Ініціалізуємо один раз при запуску додатка
+    // Реактивні стейти для Compose
+    var token by mutableStateOf<String?>(null)
+        private set
+    var userId by mutableStateOf(-1)
+        private set
+
     fun init(context: android.content.Context) {
         prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+        token = prefs.getString(KEY_TOKEN, null)
+        userId = prefs.getInt(KEY_USER_ID, -1)
     }
 
-    // Токен (читаємо з пам'яті, пишемо в пам'ять)
-    var token: String?
-        get() = prefs.getString(KEY_TOKEN, null)
-        set(value) = prefs.edit().putString(KEY_TOKEN, value).apply()
+    fun updateSession(newToken: String?, newUserId: Int) {
+        token = newToken
+        userId = newUserId
+        prefs.edit().apply {
+            putString(KEY_TOKEN, newToken)
+            putInt(KEY_USER_ID, newUserId)
+            apply()
+        }
+    }
 
-    // ID поточного юзера
-    var userId: Int
-        get() = prefs.getInt(KEY_USER_ID, -1)
-        set(value) = prefs.edit().putInt(KEY_USER_ID, value).apply()
-
-    // Перевірка, чи ми в системі
     val isLoggedIn: Boolean
-        get() = token != null
+        get() = !token.isNullOrEmpty()
 
     fun logout() {
+        token = null
+        userId = -1
         prefs.edit().clear().apply()
     }
 }

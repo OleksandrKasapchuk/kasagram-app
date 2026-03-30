@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Badge
@@ -81,6 +82,13 @@ fun KasagramBottomBar(
                 onClick = { onNavigate(NavItem.Profile.route) },
                 icon = { Icon(NavItem.Profile.icon, contentDescription = null) }
             )
+            // Logout
+            NavigationBarItem(
+                selected = currentRoute == "logout",
+                onClick = { onNavigate("logout") },
+                icon = { Icon(Icons.Default.Logout, contentDescription = null) }
+            )
+
         } else {
             // Login
             NavigationBarItem(

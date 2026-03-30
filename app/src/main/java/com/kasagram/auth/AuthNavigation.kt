@@ -37,7 +37,8 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
     }
     composable("login") {
         LoginScreen(
-            navController, onRegisterClick = { navController.navigate("register") }, AuthViewModel()
+            navController, 
+            onRegisterClick = { navController.navigate("register") }
         )
     }
 
@@ -47,16 +48,14 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
         )
     }
     composable("change_password") { ChangePasswordScreen() }
-    composable("logout") { logout(navController) }
-}
-
-fun logout(navController: NavController) {
-    // 1. Очищаємо сесію
-    AuthSession.token = null
-
-    // 2. Викидаємо юзера на екран логіну
-    navController.navigate("login") {
-        // Очищаємо всю історію переходів, щоб не можна було натиснути "назад" і повернутися в профіль
-        popUpTo(0) { inclusive = true }
+    
+    composable("logout") {
+        LaunchedEffect(Unit) {
+            AuthSession.logout()
+            navController.navigate("login") {
+                // Очищаємо всю історію переходів, щоб не можна було натиснути "назад"
+                popUpTo(0) { inclusive = true }
+            }
+        }
     }
 }

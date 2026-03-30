@@ -1,5 +1,6 @@
 package com.kasagram.post
 
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -7,9 +8,13 @@ import androidx.navigation.compose.composable
 
 fun NavGraphBuilder.postGraph(navController: NavController) {
     composable("index") {
+        // Використовуємо функцію viewModel(), а не конструктор PostViewModel()
+        // Це гарантує, що стан постів не зникатиме при навігації
+        val viewModel: PostViewModel = viewModel()
         Index(
-            viewModel = PostViewModel(),
-            onUserClick = { userId -> navController.navigate("profile/$userId")})
+            viewModel = viewModel,
+            onUserClick = { userId -> navController.navigate("profile/$userId")}
+        )
     }
 
 //    composable("add_post") {

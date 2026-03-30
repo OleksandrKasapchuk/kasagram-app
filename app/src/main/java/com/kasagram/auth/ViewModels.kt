@@ -22,9 +22,8 @@ class AuthViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.instance.login(request)
 
-                // ЗАПИСУЄМО В СЕСІЮ
-                AuthSession.token = response.token
-                AuthSession.userId = response.user_id
+                // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
+                AuthSession.updateSession(response.token, response.user_id)
 
                 onSuccess() // Переходимо на головний екран
             } catch (e: Exception) {
