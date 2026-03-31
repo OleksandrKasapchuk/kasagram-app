@@ -7,7 +7,9 @@ import com.kasagram.auth.User
 data class Chat (
     val id: Int,
     val participant: User,
-    val created: String
+    val created: String,
+    @SerializedName("last_message") val lastMessage: Message?,
+    @SerializedName("unread_count") val unreadCount: Int
 )
 
 

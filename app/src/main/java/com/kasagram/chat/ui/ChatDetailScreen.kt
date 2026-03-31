@@ -160,7 +160,7 @@ fun MessageCard(message: Message) {
                     fontSize = 16.sp
                 )
                 Text(
-                    text = "12:00", // Сюди потім підставиш реальний час
+                    text = message.formattedTime,
                     fontSize = 10.sp,
                     color = Color.Gray,
                     modifier = Modifier.align(Alignment.End)

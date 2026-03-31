@@ -44,7 +44,7 @@ fun CustomImage(
         },
         error = {
             Image(
-                painter = painterResource(R.drawable.error_img),
+                painter = painterResource(R.drawable.def_av),
                 contentDescription = "Error loading image",
                 contentScale = ContentScale.Fit // Щоб іконка помилки не розтягувалася
             )
