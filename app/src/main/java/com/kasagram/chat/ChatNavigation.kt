@@ -5,6 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.kasagram.chat.ui.ChatDetailScreen
+import com.kasagram.chat.ui.ChatListScreen
 import com.kasagram.chatList
 
 
@@ -14,8 +16,7 @@ fun NavGraphBuilder.chatGraph(navController: NavController) {
         ChatListScreen(
             onChatClick = { chatId ->
                 navController.navigate("chat_detail/$chatId")
-            },
-            chatList = chatList
+            }
         )
     }
 

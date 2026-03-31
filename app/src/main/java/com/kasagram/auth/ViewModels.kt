@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.AuthSession
-import com.kasagram.LoginRequest
-import com.kasagram.RegisterRequest
 import com.kasagram.RetrofitClient
+import com.kasagram.auth.data.AuthSession
+import com.kasagram.auth.data.LoginRequest
+import com.kasagram.auth.data.RegisterRequest
 import kotlinx.coroutines.launch
 
 
@@ -21,10 +21,10 @@ class AuthViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                val response = RetrofitClient.instance.login(request)
+                val response = RetrofitClient.authApi.login(request)
 
                 // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
-                AuthSession.updateSession(response.token, response.user_id)
+                AuthSession.updateSession(response.token, response.userId)
 
                 onSuccess() // Переходимо на головний екран
             } catch (e: Exception) {
@@ -39,10 +39,10 @@ class AuthViewModel : ViewModel() {
             isLoading = true
             errorMessage = null
             try {
-                val response = RetrofitClient.instance.register(request)
+                val response = RetrofitClient.authApi.register(request)
 
                 // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
-                AuthSession.updateSession(response.token, response.user_id)
+                AuthSession.updateSession(response.token, response.userId)
 
                 onSuccess() // Переходимо на головний екран
             } catch (e: Exception) {
@@ -63,7 +63,7 @@ class ProfileViewModel : ViewModel() {
             isLoading = true
             try {
                 // Викликаємо Retrofit
-                val user = RetrofitClient.instance.getUserDetail(userId)
+                val user = RetrofitClient.authApi.getUserDetail(userId)
                 userState = user
             } catch (e: Exception) {
                 println("Помилка: ${e.localizedMessage}")

@@ -1,4 +1,4 @@
-package com.kasagram.post
+package com.kasagram.post.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,8 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.kasagram.post.Comment
+import com.kasagram.post.Post
 
 
 @Composable
@@ -162,7 +164,7 @@ fun MessageInputField(
                 enabled = value.isNotBlank()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Send,
+                    imageVector = Icons.AutoMirrored.Filled.Send,
                     contentDescription = "Send",
                     tint = if (value.isNotBlank()) MaterialTheme.colorScheme.primary else Color.Gray
                 )

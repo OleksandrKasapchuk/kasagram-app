@@ -1,4 +1,4 @@
-package com.kasagram.auth
+package com.kasagram.auth.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kasagram.R
+import com.kasagram.auth.User
 import com.kasagram.post.Post
 
 

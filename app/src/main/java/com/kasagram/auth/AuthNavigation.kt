@@ -8,7 +8,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.kasagram.AuthSession
+import com.kasagram.auth.data.AuthSession
+import com.kasagram.auth.ui.ChangePasswordScreen
+import com.kasagram.auth.ui.LoginScreen
+import com.kasagram.auth.ui.ProfileScreen
+import com.kasagram.auth.ui.RegisterScreen
 
 
 fun NavGraphBuilder.authGraph(navController: NavController) {
@@ -37,13 +41,13 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
     }
     composable("login") {
         LoginScreen(
-            navController, 
+            navController,
             onRegisterClick = { navController.navigate("register") }
         )
     }
 
     composable("register") {
-        RegistrationScreen(
+        RegisterScreen(
             navController,
             onLoginClick = { navController.navigate("login") }
         )

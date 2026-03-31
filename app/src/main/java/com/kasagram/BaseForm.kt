@@ -12,6 +12,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
+
+
 class GenericFormState(initialFields: List<String>) {
     // Карта, де ключ — назва поля (н-д "username"), а значення — MutableState
     val fields = initialFields.associateWith { mutableStateOf("") }

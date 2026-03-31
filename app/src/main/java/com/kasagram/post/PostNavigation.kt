@@ -4,6 +4,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.kasagram.post.ui.Index
 
 
 fun NavGraphBuilder.postGraph(navController: NavController) {
@@ -13,7 +14,7 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
         val viewModel: PostViewModel = viewModel()
         Index(
             viewModel = viewModel,
-            onUserClick = { userId -> navController.navigate("profile/$userId")}
+            onUserClick = { userId -> navController.navigate("profile/$userId") }
         )
     }
 

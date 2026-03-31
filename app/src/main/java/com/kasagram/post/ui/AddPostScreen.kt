@@ -1,4 +1,4 @@
-package com.kasagram.post
+package com.kasagram.post.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest

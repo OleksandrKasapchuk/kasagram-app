@@ -1,4 +1,4 @@
-package com.kasagram.post
+package com.kasagram.post.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kasagram.post.Post
+import com.kasagram.post.PostViewModel
+import com.kasagram.post.ui.components.PostCard
 
 @Composable
 fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit) {
@@ -36,7 +39,6 @@ fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit) {
         } else if (viewModel.isLoading && viewModel.posts.isEmpty()) {
             Text("Завантаження перших постів...", modifier = Modifier.padding(16.dp))
         } else {
-            // Якщо пости вже є, ми їх НЕ ВИДАЛЯЄМО, навіть коли isLoading = true (йде дозавантаження)
             PostFeed(posts = viewModel.posts, viewModel = viewModel, onUserClick = onUserClick)
         }
     }
@@ -89,12 +91,6 @@ fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> 
                 LaunchedEffect(Unit) {
                     viewModel.fetchPosts(isFirstPage = false)
                 }
-            }
-        }
-
-        if (viewModel.isLoading) {
-            item {
-                Text("Завантаження нових постів...", modifier = Modifier.padding(16.dp))
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.kasagram.chat
+package com.kasagram.chat.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,11 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.kasagram.AuthSession
 import com.kasagram.R
 import com.kasagram.auth.User
+import com.kasagram.auth.data.AuthSession
+import com.kasagram.chat.Chat
+import com.kasagram.chat.Message
 import com.kasagram.messagesList
-import com.kasagram.post.MessageInputField
+import com.kasagram.post.ui.MessageInputField
 
 @Composable
 fun ChatDetailScreen(chat: Chat, onUserClick: (Int) -> Unit) {

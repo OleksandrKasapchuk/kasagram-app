@@ -1,7 +1,9 @@
-package com.kasagram.post
+package com.kasagram.post.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,15 +18,18 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -33,14 +38,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.kasagram.R
+import com.kasagram.post.Post
 
 
 @Composable
 fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
     var isLiked by remember { mutableStateOf(post.isLiked) }
-    var likesCount by remember { mutableStateOf(post.likesCount) }
+    var likesCount by remember { mutableIntStateOf(post.likesCount) }
 
     Card(
         modifier = Modifier
@@ -58,21 +64,34 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
                 .fillMaxWidth()
         ) {
             // Шапка поста: Автор
-            Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            Row(verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable { onUserClick(post.user.id) }
             ) {
-                AsyncImage(
-                    // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
+                SubcomposeAsyncImage(
                     model = post.user.avatarUrl ?: R.drawable.def_av,
                     contentDescription = "User avatar",
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(30.dp),
-                    contentScale = ContentScale.Crop, // Обрізає фото під розмір, щоб не було дірок
-                    // 2. Поки фото вантажиться з інтернету, показуємо це:
-                    placeholder = painterResource(R.drawable.loading_img),
-                    // 3. Якщо сталася помилка завантаження:
-                    error = painterResource(R.drawable.error_img)
+                    contentScale = ContentScale.Crop,
+                    // ЛОГІКА ЗАВАНТАЖЕННЯ ТУТ
+                    loading = {
+                        // Показуємо маленький індикатор по центру місця під аватар
+                        Box(contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(15.dp), // Маленький для аватара
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    },
+                    error = {
+                        // Якщо помилка — показуємо локальний ресурс
+                        Image(
+                            painter = painterResource(R.drawable.error_img),
+                            contentDescription = "Error loading avatar"
+                        )
+                    }
                 )
                 
                 Text(
@@ -88,18 +107,32 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
             // Card - це контейнер з тінню та закругленими кутами
-            AsyncImage(
-                // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
+
+            SubcomposeAsyncImage(
                 model = post.mediaUrl,
-                contentDescription = "Post Image",
+                contentDescription = "User post",
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp),
-                contentScale = ContentScale.Crop, // Обрізає фото під розмір, щоб не було дірок
-                // 2. Поки фото вантажиться з інтернету, показуємо це:
-                placeholder = painterResource(R.drawable.loading_img),
-                // 3. Якщо сталася помилка завантаження:
-                error = painterResource(R.drawable.error_img)
+                contentScale = ContentScale.Crop,
+                // ЛОГІКА ЗАВАНТАЖЕННЯ ТУТ
+                loading = {
+                    // Показуємо маленький індикатор по центру місця під аватар
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(150.dp), // Маленький для аватара
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                },
+                error = {
+                    // Якщо помилка — показуємо локальний ресурс
+                    Image(
+                        painter = painterResource(R.drawable.error_img),
+                        contentDescription = "Error loading avatar"
+                    )
+                }
             )
             // Контент поста (Текст)
             Text(

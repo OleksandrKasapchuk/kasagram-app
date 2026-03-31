@@ -1,11 +1,11 @@
 package com.kasagram
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AddBox
-import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Login
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Badge
@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.kasagram.auth.data.AuthSession
 
 // Описуємо пункт меню як об'єкт
 sealed class NavItem(val title: String, val icon: ImageVector) {
@@ -29,7 +30,7 @@ sealed class NavItem(val title: String, val icon: ImageVector) {
     object Add : NavItem("", Icons.Default.AddBox) {
         override val route = "add_post"
     }
-    object Messages : NavItem("", Icons.Default.Chat) {
+    object Messages : NavItem("", Icons.AutoMirrored.Filled.Chat) {
         override val route = "chat_list"
     }
     object Notifications : NavItem("", Icons.Default.Notifications) {
@@ -98,7 +99,7 @@ fun KasagramBottomBar(
             NavigationBarItem(
                 selected = currentRoute == "logout",
                 onClick = { onNavigate("logout") },
-                icon = { Icon(Icons.Default.Logout, contentDescription = null) }
+                icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null) }
             )
 
         } else {
@@ -106,7 +107,7 @@ fun KasagramBottomBar(
             NavigationBarItem(
                 selected = currentRoute == "login",
                 onClick = { onNavigate("login") },
-                icon = { Icon(Icons.Default.Login, contentDescription = null) }
+                icon = { Icon(Icons.AutoMirrored.Filled.Login, contentDescription = null) }
             )
         }
     }

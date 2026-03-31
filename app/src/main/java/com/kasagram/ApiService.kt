@@ -1,38 +1,14 @@
 package com.kasagram
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.kasagram.auth.User
-import com.kasagram.post.Post
+import com.kasagram.auth.data.AuthApi
+import com.kasagram.auth.data.AuthSession
+import com.kasagram.chat.data.ChatApi
+import com.kasagram.post.data.PostApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
-
-
-interface ApiService {
-    @POST("login/")
-    suspend fun login(@Body request: LoginRequest): AuthResponse
-
-    @POST("register/")
-    suspend fun register(@Body request: RegisterRequest): AuthResponse
-
-    @GET("posts/")
-    suspend fun getPosts(@Query("page") page: Int): PaginatedResponse<Post>
-
-    @GET("posts/{id}/")
-    suspend fun getPostDetail(@Path("id") id: Int): Post
-
-    @GET("user-info/{id}/")
-    suspend fun getUserDetail(@Path("id") id: Int): User
-}
 
 
 object RetrofitClient {
@@ -61,7 +37,7 @@ object RetrofitClient {
             level = HttpLoggingInterceptor.Level.BODY
         }).build()
 
-    val instance: ApiService by lazy {
+    val retrofit: Retrofit by lazy {
         val baseUrl = if (IS_DEBUG) DEBUG_URL else PROD_URL
 
         Retrofit.Builder()
@@ -69,8 +45,10 @@ object RetrofitClient {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
     }
+    val authApi: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
+    val postApi: PostApi by lazy { retrofit.create(PostApi::class.java) }
+    val сhatApi: ChatApi by lazy { retrofit.create(ChatApi::class.java) }
 }
 
 
@@ -80,62 +58,3 @@ data class PaginatedResponse<T>(
     val previous: String?,
     val results: List<T>
 )
-
-data class LoginRequest(
-    val username: String,
-    val password: String
-)
-
-data class RegisterRequest(
-    val username: String,
-    val first_name: String,
-    val last_name: String,
-    val email: String,
-    val password: String,
-    val bio: String
-)
-
-data class AuthResponse(
-    val token: String,
-    val user_id: Int,
-    val username: String
-)
-
-object AuthSession {
-    private const val PREFS_NAME = "kasagram_prefs"
-    private const val KEY_TOKEN = "auth_token"
-    private const val KEY_USER_ID = "user_id"
-
-    private lateinit var prefs: android.content.SharedPreferences
-
-    // Реактивні стейти для Compose
-    var token by mutableStateOf<String?>(null)
-        private set
-    var userId by mutableStateOf(-1)
-        private set
-
-    fun init(context: android.content.Context) {
-        prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
-        token = prefs.getString(KEY_TOKEN, null)
-        userId = prefs.getInt(KEY_USER_ID, -1)
-    }
-
-    fun updateSession(newToken: String?, newUserId: Int) {
-        token = newToken
-        userId = newUserId
-        prefs.edit().apply {
-            putString(KEY_TOKEN, newToken)
-            putInt(KEY_USER_ID, newUserId)
-            apply()
-        }
-    }
-
-    val isLoggedIn: Boolean
-        get() = !token.isNullOrEmpty()
-
-    fun logout() {
-        token = null
-        userId = -1
-        prefs.edit().clear().apply()
-    }
-}
