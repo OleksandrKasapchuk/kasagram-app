@@ -7,15 +7,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.kasagram.chat.ui.ChatDetailScreen
 import com.kasagram.chat.ui.ChatListScreen
-import com.kasagram.chatList
 
 
 fun NavGraphBuilder.chatGraph(navController: NavController) {
     // Групуємо всі маршрути чату
     composable("chat_list") {
         ChatListScreen(
-            onChatClick = { chatId ->
-                navController.navigate("chat_detail/$chatId")
+            onChatClick = { id ->
+                navController.navigate("chat_detail/$id")
             }
         )
     }
@@ -24,13 +23,10 @@ fun NavGraphBuilder.chatGraph(navController: NavController) {
         route = "chat_detail/{chatId}",
         arguments = listOf(navArgument("chatId") { type = NavType.IntType })
     ) { backStackEntry ->
-        val chatId = backStackEntry.arguments?.getInt("chatId") ?: 0
-        val chat = chatList.find { it.id == chatId } // Беремо з твоїх моків
+        val chatId = backStackEntry.arguments?.getInt("chatId") ?: -1
 
-        if (chat != null) {
-            ChatDetailScreen(chat = chat, onUserClick = { userId ->
-                navController.navigate("profile/$userId")
-            })
+        ChatDetailScreen(chatId = chatId, onUserClick = { userId ->
+            navController.navigate("profile/$userId")
+        })
         }
-    }
 }

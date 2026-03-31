@@ -20,14 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.kasagram.R
 import com.kasagram.auth.User
 import com.kasagram.post.Post
+import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
@@ -62,14 +60,13 @@ fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavControlle
 
 @Composable
 fun PostThumbnail(post: Post, navController: NavController) {
-    AsyncImage(
+    CustomImage(
         model = post.mediaUrl,
-        contentDescription = null,
-        modifier = Modifier
-            .aspectRatio(1f)
+        contentDescription = "post media",
+        modifier = Modifier.aspectRatio(1f)
             .fillMaxWidth()
             .clickable{navController.navigate("post_detail/${post.id}")},
-        contentScale = ContentScale.Crop
+        loadingSize = 150.dp
     )
 }
 
@@ -77,13 +74,11 @@ fun PostThumbnail(post: Post, navController: NavController) {
 fun ProfileHeader(user: User){
     // 1. ШАПКА (Аватар + Стати)
     Row(verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            model = user.avatarUrl ?: R.drawable.def_av,
-            contentDescription = null,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape), // Modifier.clip робить аватарку круглою!
-            contentScale = ContentScale.Crop
+        CustomImage(
+            model = user.avatarUrl,
+            contentDescription = "post media",
+            modifier = Modifier.size(80.dp).clip(CircleShape),
+            loadingSize = 40.dp
         )
     }
 

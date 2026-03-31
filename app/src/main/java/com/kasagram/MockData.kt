@@ -2,21 +2,8 @@ package com.kasagram
 
 
 import com.kasagram.auth.User
-import com.kasagram.chat.Chat
-import com.kasagram.chat.Message
 import com.kasagram.notification.Notification
 
-
-val author = User(
-    id = 1,
-    username = "Sashapre228",
-    avatarUrl = "https://res.cloudinary.com/ddothsprl/image/upload/v1773921665/sngrtl1d064awzlzwl7h.png",
-    bio = "Popa jopa",
-    isOnline = true,
-    firstName = "Oleksandr",
-    lastName = "Kasapchuk",
-    lastSeen = "now"
-)
 
 
 val author2 = User(
@@ -43,25 +30,7 @@ val author3 = User(
 
 
 
-val chatList = listOf (
-    Chat(
-        id = 1,
-        participants = listOf(author, author3),
-        created = "01.01.01",
-    ),
 
-    Chat(
-        id = 2,
-        participants = listOf(author, author2),
-        created = "03.03.03",
-    )
-)
-
-val messagesList = listOf (
-    Message(chatList[1], author, "Hello!", "01.01.01", true, null),
-    Message(chatList[1], author2, "test user message!", "01.01.01", true, null),
-    Message(chatList[1], author, "test!", "01.01.01", true, null),
-)
 
 val notificationList = listOf (
     Notification(

@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,35 +31,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import com.kasagram.R
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kasagram.auth.User
 import com.kasagram.auth.data.AuthSession
-import com.kasagram.chat.Chat
 import com.kasagram.chat.Message
-import com.kasagram.messagesList
+import com.kasagram.chat.MessageViewModel
 import com.kasagram.post.ui.MessageInputField
+import com.kasagram.post.ui.components.CustomImage
 
 @Composable
-fun ChatDetailScreen(chat: Chat, onUserClick: (Int) -> Unit) {
-    val participant = chat.participants.find { it.id != AuthSession.userId }
-    var chatMessage by remember { mutableStateOf("") }
-    Column (modifier = Modifier.fillMaxSize()) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            item {
-                Header(participant, onUserClick)
-            }
-            val chatMessages = messagesList.filter { it.chat.id == chat.id }
+fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit, viewModel: MessageViewModel = viewModel()) {
+    val listState = rememberLazyListState()
 
-            items(chatMessages) { message ->
+    // Завантажуємо першу сторінку при вході
+    LaunchedEffect(chatId) {
+        viewModel.fetchMessages(chatId, isFirstPage = true)
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        // 1. Хедер (закріплений зверху)
+        Header(viewModel.participant, onUserClick)
+
+        // 2. Список повідомлень (займає всю вільну вагу між хедером і полем введення)
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .weight(1f) // Це дозволяє списку скролитись і не вилазити на інші елементи
+                .fillMaxWidth(),
+            reverseLayout = true // Повідомлення будуть йти знизу вгору (як у Telegram)
+        ) {
+            // Якщо використовуєте reverseLayout, переконайтеся, що пагінація логічно вірна
+            items(viewModel.messages) { message ->
                 MessageCard(message)
             }
+
+            item {
+                if (viewModel.isLoading) {
+                    Box(Modifier.fillMaxWidth().padding(8.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    }
+                } else if (!viewModel.isEndReached) {
+                    LaunchedEffect(Unit) {
+                        viewModel.fetchMessages(chatId, isFirstPage = false)
+                    }
+                }
+            }
         }
+        var chatMessage by remember { mutableStateOf("") }
         MessageInputField(
             value = chatMessage,
             onValueChange = { chatMessage = it },
@@ -75,21 +100,15 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
                 .fillMaxWidth()
                 .clickable { participant?.let { onUserClick(it.id) } }
         ) {
-            AsyncImage(
-                model = participant?.avatarUrl ?: R.drawable.def_av,
-                contentDescription = "User avatar",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(30.dp),
-                contentScale = ContentScale.Crop,
-
-                placeholder = painterResource(R.drawable.loading_img),
-                // 3. Якщо сталася помилка завантаження:
-                error = painterResource(R.drawable.error_img)
+            CustomImage(
+                model = participant?.avatarUrl,
+                contentDescription = "Avatar",
+                modifier = Modifier.size(30.dp).clip(CircleShape),
+                loadingSize = 15.dp
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                text = participant?.username ?: "grr",
+                text = participant?.username ?: "",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary
@@ -104,7 +123,7 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
 @Composable
 fun MessageCard(message: Message) {
     // 1. Визначаємо, чи це наше повідомлення
-    val isMine = message.sender.id == AuthSession.userId
+    val isMine = message.user.id == AuthSession.userId
 
     // 2. Використовуємо Row, щоб розставити повідомлення по боках
     Row(

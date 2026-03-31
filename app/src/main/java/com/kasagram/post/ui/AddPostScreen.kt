@@ -26,11 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.kasagram.FormField
 import com.kasagram.GenericFormState
+import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
@@ -107,11 +106,10 @@ fun ImagePickerField(fieldName: String, state: GenericFormState) {
         if (currentUri.isNullOrBlank()) {
             Icon(Icons.Default.AddAPhoto, modifier = Modifier.size(48.dp), contentDescription = null)
         } else {
-            AsyncImage(
-                model = currentUri,
-                contentDescription = null,
+            CustomImage(
+                model =  currentUri,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                loadingSize = 100.dp
             )
         }
     }

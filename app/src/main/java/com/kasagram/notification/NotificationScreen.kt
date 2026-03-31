@@ -21,15 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import com.kasagram.R
+import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
@@ -81,15 +79,13 @@ fun NotificationItem(
             .padding(12.dp),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
     ) {
-        // Аватар (клікабельний)
-        AsyncImage(
-            model = notification.actor.avatarUrl ?: R.drawable.def_av,
-            contentDescription = null,
+        CustomImage(
+            model =  notification.actor.avatarUrl,
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
                 .clickable { onUserClick(notification.actor.id) },
-            contentScale = ContentScale.Crop
+            loadingSize = 25.dp
         )
 
         Spacer(modifier = Modifier.width(12.dp))

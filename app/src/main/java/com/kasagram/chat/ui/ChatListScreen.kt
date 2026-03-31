@@ -21,17 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.kasagram.R
-import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.Chat
 import com.kasagram.chat.ChatViewModel
+import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
@@ -65,7 +61,6 @@ fun ChatListScreen(onChatClick: (Int) -> Unit, viewModel: ChatViewModel = viewMo
 
 @Composable
 fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
-    val participant = chat.participants.find { it.id != AuthSession.userId }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,24 +78,17 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            // Шапка поста: Автор
             Row(verticalAlignment = Alignment.CenterVertically) {
-                AsyncImage(
-                    // 1. ПЕРЕВІРКА: якщо media_url порожній, беремо локальну заглушку
-                    model = participant?.avatarUrl ?: R.drawable.def_av,
-                    contentDescription = "User avatar",
-                    modifier = Modifier
-                        .clip(CircleShape)
+                CustomImage(
+                    model =  chat.participant.avatarUrl,
+                    contentDescription = "user avatar",
+                    modifier = Modifier.clip(CircleShape)
                         .size(30.dp),
-                    contentScale = ContentScale.Crop, // Обрізає фото під розмір, щоб не було дірок
-                    // 2. Поки фото вантажиться з інтернету, показуємо це:
-                    placeholder = painterResource(R.drawable.loading_img),
-                    // 3. Якщо сталася помилка завантаження:
-                    error = painterResource(R.drawable.error_img)
+                    loadingSize = 15.dp
                 )
 
                 Text(
-                    text = participant?.username ?: "unluck",
+                    text = chat.participant.username,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,

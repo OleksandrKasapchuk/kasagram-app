@@ -1,9 +1,7 @@
 package com.kasagram.post.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +16,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,13 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.SubcomposeAsyncImage
-import com.kasagram.R
 import com.kasagram.post.Post
 
 
@@ -67,31 +60,11 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable { onUserClick(post.user.id) }
             ) {
-                SubcomposeAsyncImage(
-                    model = post.user.avatarUrl ?: R.drawable.def_av,
-                    contentDescription = "User avatar",
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(30.dp),
-                    contentScale = ContentScale.Crop,
-                    // ЛОГІКА ЗАВАНТАЖЕННЯ ТУТ
-                    loading = {
-                        // Показуємо маленький індикатор по центру місця під аватар
-                        Box(contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(15.dp), // Маленький для аватара
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    },
-                    error = {
-                        // Якщо помилка — показуємо локальний ресурс
-                        Image(
-                            painter = painterResource(R.drawable.error_img),
-                            contentDescription = "Error loading avatar"
-                        )
-                    }
+                CustomImage(
+                    model = post.user.avatarUrl,
+                    contentDescription = "Avatar",
+                    modifier = Modifier.size(50.dp).clip(CircleShape),
+                    loadingSize = 20.dp
                 )
                 
                 Text(
@@ -106,35 +79,12 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Spacer(modifier = Modifier.height(16.dp))
-            // Card - це контейнер з тінню та закругленими кутами
 
-            SubcomposeAsyncImage(
+            CustomImage(
                 model = post.mediaUrl,
                 contentDescription = "User post",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentScale = ContentScale.Crop,
-                // ЛОГІКА ЗАВАНТАЖЕННЯ ТУТ
-                loading = {
-                    // Показуємо маленький індикатор по центру місця під аватар
-                    Box(contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(150.dp), // Маленький для аватара
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                },
-                error = {
-                    // Якщо помилка — показуємо локальний ресурс
-                    Image(
-                        painter = painterResource(R.drawable.error_img),
-                        contentDescription = "Error loading avatar"
-                    )
-                }
+                modifier = Modifier.fillMaxWidth().height(300.dp)
             )
-            // Контент поста (Текст)
             Text(
                 text = post.content ?: "",
                 fontSize = 14.sp,

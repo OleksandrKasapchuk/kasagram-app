@@ -34,15 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.kasagram.post.Comment
 import com.kasagram.post.Post
+import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
@@ -74,11 +73,10 @@ fun PostDetailScreen(
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding).fillMaxSize()) {
             item {
-                AsyncImage(
-                    model = post.mediaUrl,
-                    contentDescription = null,
+                CustomImage(
+                    model =  post.mediaUrl,
                     modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-                    contentScale = ContentScale.Crop
+                    loadingSize = 15.dp
                 )
             }
 
@@ -177,10 +175,10 @@ fun MessageInputField(
 fun CommentItem(comment: Comment, onReplyClick: () -> Unit) {
     Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
         Row {
-            AsyncImage(
-                model = comment.user.avatarUrl,
-                contentDescription = null,
-                modifier = Modifier.size(36.dp).clip(CircleShape)
+            CustomImage(
+                model =  comment.user.avatarUrl,
+                modifier = Modifier.size(36.dp).clip(CircleShape),
+                loadingSize = 18.dp
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
@@ -205,13 +203,13 @@ fun CommentItem(comment: Comment, onReplyClick: () -> Unit) {
             }
         }
 
-        // Рендеримо відповіді (Replies)
         comment.replies.forEach { reply ->
             Row(modifier = Modifier.padding(start = 48.dp, top = 12.dp)) {
-                AsyncImage(
+                CustomImage(
                     model = reply.user.avatarUrl,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp).clip(CircleShape)
+                    contentDescription = "user avatar",
+                    modifier = Modifier.size(24.dp).clip(CircleShape),
+                    loadingSize = 12.dp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

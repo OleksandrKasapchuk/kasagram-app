@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kasagram.RetrofitClient
+import com.kasagram.auth.User
 import kotlinx.coroutines.launch
 
 
@@ -27,16 +28,58 @@ class ChatViewModel : ViewModel() {
                 val pageToLoad = if (isFirstPage) 1 else currentPage + 1
                 val response = RetrofitClient.сhatApi.getChats(pageToLoad)
 
-                if (isFirstPage) {
-                    chats = response.results
+                chats = if (isFirstPage) {
+                    response.results
                 } else {
-                    chats = chats + response.results // Додаємо нові пости до старих
+                    chats + response.results // Додаємо нові пости до старих
                 }
 
                 nextPageUrl = response.next
                 currentPage = pageToLoad
             } catch (e: Exception) {
                 errorMessage = "Could not download chats: ${e.message}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+}
+
+
+class MessageViewModel : ViewModel() {
+    var messages by mutableStateOf<List<Message>>(emptyList())
+    var participant by mutableStateOf<User?>(null)
+    var isLoading by mutableStateOf(false)
+    var isEndReached by mutableStateOf(false) // Чи завантажили ми все
+    var errorMessage by mutableStateOf<String?>(null)
+
+    fun fetchMessages(chatId: Int, isFirstPage: Boolean = true) {
+        if (isLoading || (isEndReached && !isFirstPage)) return
+
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                // Визначаємо oldestId: якщо вантажимо наступну сторінку, беремо ID останнього повідомлення
+                val oldestId = if (isFirstPage) null else messages.lastOrNull()?.id
+
+                val response = RetrofitClient.сhatApi.getMessages(chatId, oldestId)
+
+                if (response.success) {
+                    val newMessages = response.messages
+                    participant = response.participant
+                    if (newMessages.isEmpty()) {
+                        isEndReached = true
+                    } else {
+                        messages = if (isFirstPage) {
+                            newMessages
+                        } else {
+                            // Додаємо в кінець списку (бо бекенд повертає старіші за ID)
+                            messages + newMessages
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                errorMessage = "Помилка завантаження: ${e.message}"
             } finally {
                 isLoading = false
             }
