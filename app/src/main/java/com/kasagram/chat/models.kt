@@ -1,20 +1,27 @@
 package com.kasagram.chat
 
+import com.google.gson.annotations.SerializedName
 import com.kasagram.auth.User
 
 
 data class Chat (
     val id: Int,
-    val participants: List<User>,
-    val created: String
+    val participant: User,
+    val created: String,
+    @SerializedName("last_message") val lastMessage: Message?,
+    @SerializedName("unread_count") val unreadCount: Int
 )
 
 
 data class Message (
-    val chat: Chat,
-    val sender: User,
+    val id: Int,
+    val user: User,
     val content: String,
-    val created: String,
-    var is_read: Boolean, // VAR, бо коли юзер відкриє чат, ми зміним на true
-    val parent: Message?  // VAL, бо батьківське повідомлення не міняється
+    val timestamp: String,
+    @SerializedName("formatted_time") val formattedTime: String,
+    @SerializedName("is_read") var isRead: Boolean,
+    @SerializedName("is_user_message") val isUserMessage: Boolean,
+    @SerializedName("parent_id") val parentId: Int?,
+    @SerializedName("parent_content") val parentContent: String?,
+    @SerializedName("parent_username") val parentUsername: String?
 )
