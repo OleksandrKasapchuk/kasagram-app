@@ -4,6 +4,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.kasagram.post.ui.AddPostScreen
 import com.kasagram.post.ui.Index
 
 
@@ -18,35 +19,23 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
         )
     }
 
-//    composable("add_post") {
-//        AddPostScreen(
-//            onPostCreated = { data ->
-//                // 1. Дістаємо дані з форми
-//                val caption = data["caption"] ?: ""
-//                val imageUri = data["image"] ?: "" // Це Uri з галереї!
-//
-//                // 2. Створюємо новий об'єкт Post
-//                val newPost = Post(
-//                    // Генеруємо тимчасовий ID (наприклад, timestamp)
-//                    id = System.currentTimeMillis().toInt(),
-//                    // Автором ставимо поточного залогіненого юзера
-//                    user = AuthSession.currentUser ?: author,
-//                    // ВАЖЛИВО: AsyncImage в Index спокійно прочитає цей imageUri
-//                    mediaUrl = imageUri,
-//                    content = caption,
-//                    datePublished = "now",
-//                    isLiked = false,
-//                    likesCount = 0
-//                )
-//
-//
-//                // 4. Повертаємося на головну
-//                navController.navigate("index") {
-//                    popUpTo("index") { inclusive = true }
-//                }
-//            }
-//        )
-//    }
+    composable("add_post") {
+        // Отримуємо екземпляр нашої нової AndroidViewModel
+        val createViewModel: CreatePostViewModel = viewModel()
+
+        AddPostScreen(createViewModel.isUploading,
+            onPostCreated = { data ->
+                // Викликаємо метод завантаження
+                createViewModel.uploadPost(data) {
+                    // Цей блок {} виконається тільки після успішного API запиту (onComplete)
+                    navController.navigate("index") {
+                        // Очищуємо бекстек, щоб юзер не повернувся на екран створення кнопкою "Назад"
+                        popUpTo("index") { inclusive = true }
+                    }
+                }
+            }
+        )
+    }
 //    composable(
 //        route = "post_detail/{postId}",
 //        arguments = listOf(navArgument("postId") { type = NavType.IntType })

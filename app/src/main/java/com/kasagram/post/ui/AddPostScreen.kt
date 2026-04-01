@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,10 +35,10 @@ import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
-fun AddPostScreen(onPostCreated: (Map<String, String>) -> Unit) {
+fun AddPostScreen(isSending: Boolean, onPostCreated: (Map<String, String>) -> Unit) {
     // 1. Використовуємо наш універсальний стейт
     val form = remember {
-        GenericFormState(listOf("caption", "image_uri"))
+        GenericFormState(listOf("content", "image_uri"))
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -54,8 +56,8 @@ fun AddPostScreen(onPostCreated: (Map<String, String>) -> Unit) {
 
         // 3. Наш універсальний FormField для тексту
         FormField(
-            label = "Write a caption...",
-            fieldName = "caption",
+            label = "Content",
+            fieldName = "content",
             state = form
         )
 
@@ -64,16 +66,23 @@ fun AddPostScreen(onPostCreated: (Map<String, String>) -> Unit) {
         Button(
             onClick = {
                 val data = mapOf(
-                    "caption" to form.getValue("caption"),
+                    "content" to form.getValue("content"),
                     "image" to form.getValue("image_uri")
                 )
                 onPostCreated(data)
             },
-            // Кнопка активна, тільки якщо форма валідна (поля не порожні)
-            enabled = form.isValid(),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Share Post")
+        // Кнопка активна, тільки якщо форма валідна (поля не порожні)
+        enabled = form.isValid() && !isSending,
+        modifier = Modifier.fillMaxWidth()) {
+            if (isSending) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(if (isSending) "Sharing..." else "Share Post")
         }
     }
 }
