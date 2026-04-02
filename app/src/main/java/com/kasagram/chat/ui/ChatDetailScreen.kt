@@ -34,16 +34,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kasagram.auth.User
-import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.Message
 import com.kasagram.chat.MessageViewModel
 import com.kasagram.post.ui.MessageInputField
 import com.kasagram.post.ui.components.CustomImage
 
 @Composable
-fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit, viewModel: MessageViewModel = viewModel()) {
+fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit,onSendMessage: (String) -> Unit , viewModel: MessageViewModel) {
     val listState = rememberLazyListState()
 
     // Завантажуємо першу сторінку при вході
@@ -85,7 +83,12 @@ fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit, viewModel: Message
         MessageInputField(
             value = chatMessage,
             onValueChange = { chatMessage = it },
-            onSendClick = { /* API Send Message to Chat */ },
+            onSendClick = {
+                if (chatMessage.isNotBlank()) {
+                    onSendMessage(chatMessage)
+                    chatMessage = "" // Очищаємо поле після відправки
+                }
+            },
             placeholder = "Message..."
         )
     }
@@ -123,7 +126,7 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
 @Composable
 fun MessageCard(message: Message) {
     // 1. Визначаємо, чи це наше повідомлення
-    val isMine = message.user.id == AuthSession.userId
+    val isMine = message.isMe
 
     // 2. Використовуємо Row, щоб розставити повідомлення по боках
     Row(

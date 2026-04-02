@@ -39,6 +39,7 @@ import com.kasagram.chat.Chat
 import com.kasagram.chat.ChatViewModel
 import com.kasagram.post.ui.components.CustomImage
 
+
 @Composable
 fun ChatListScreen(onChatClick: (Int) -> Unit, viewModel: ChatViewModel = viewModel()) {
     LaunchedEffect(Unit) {
@@ -113,7 +114,7 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                     chat.lastMessage?.let { msg ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             // Галочки тільки якщо повідомлення наше
-                            if (msg.isUserMessage) {
+                            if (msg.isMe) {
                                 val icon = if (msg.isRead) Icons.Default.DoneAll else Icons.Default.Check
                                 val color = if (msg.isRead) Color(0xFF4FC3F7) else Color.White // Блакитний якщо прочитано
 
@@ -142,7 +143,7 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val previewText = if (chat.lastMessage != null) {
-                        val prefix = if (chat.lastMessage.isUserMessage) "You: " else ""
+                        val prefix = if (chat.lastMessage.isMe) "You: " else ""
                         "$prefix${chat.lastMessage.content ?: ""}"
                     } else {
                         "No messages yet"

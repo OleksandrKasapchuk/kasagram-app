@@ -6,22 +6,22 @@ import com.kasagram.post.Post
 data class User(
     val id: Int,
     var username: String,
-    var bio: String?,
+    var bio: String? = null,
 
     @SerializedName("avatar_url")
-    var avatarUrl: String?,
+    var avatarUrl: String? = null,
 
     @SerializedName("is_online")
-    var isOnline: Boolean?,
+    var isOnline: Boolean? = false,
 
     @SerializedName("first_name")
-    var firstName: String?,
+    var firstName: String? = null,
 
     @SerializedName("last_name")
-    var lastName: String?,
+    var lastName: String? = null,
 
     @SerializedName("last_seen")
-    var lastSeen: String?,
+    var lastSeen: String? = null,
 
     @SerializedName("user_posts")
     val userPosts: List<Post> = emptyList(), // Список постів від бекенда

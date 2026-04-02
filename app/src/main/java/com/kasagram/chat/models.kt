@@ -20,7 +20,7 @@ data class Message (
     val timestamp: String,
     @SerializedName("formatted_time") val formattedTime: String,
     @SerializedName("is_read") var isRead: Boolean,
-    @SerializedName("is_user_message") val isUserMessage: Boolean,
+    @SerializedName("is_me") val isMe: Boolean,
     @SerializedName("parent_id") val parentId: Int?,
     @SerializedName("parent_content") val parentContent: String?,
     @SerializedName("parent_username") val parentUsername: String?
