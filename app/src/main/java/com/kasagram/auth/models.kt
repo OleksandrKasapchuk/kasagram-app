@@ -12,13 +12,13 @@ data class User(
     var avatarUrl: String?,
 
     @SerializedName("is_online")
-    var isOnline: Boolean,
+    var isOnline: Boolean?,
 
     @SerializedName("first_name")
-    var firstName: String,
+    var firstName: String?,
 
     @SerializedName("last_name")
-    var lastName: String,
+    var lastName: String?,
 
     @SerializedName("last_seen")
     var lastSeen: String?,

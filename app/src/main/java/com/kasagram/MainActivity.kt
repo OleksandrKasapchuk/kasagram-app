@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                     bottomBar = {
                         KasagramBottomBar(
                             isAuthenticated = !AuthSession.token.isNullOrEmpty(),
-                            unreadCount = 5,
+                            unreadCount = 0,
                             currentRoute = currentRoute,
                             onNavigate = { route ->
                                 navController.navigate(route) {

@@ -3,6 +3,7 @@ package com.kasagram
 import com.kasagram.auth.data.AuthApi
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.data.ChatApi
+import com.kasagram.notification.data.NotificationApi
 import com.kasagram.post.data.PostApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -49,6 +50,7 @@ object RetrofitClient {
     val authApi: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
     val postApi: PostApi by lazy { retrofit.create(PostApi::class.java) }
     val сhatApi: ChatApi by lazy { retrofit.create(ChatApi::class.java) }
+    val notificationApi: NotificationApi by lazy { retrofit.create(NotificationApi::class.java) }
 }
 
 
