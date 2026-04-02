@@ -8,9 +8,10 @@ data class Post(
     val id: Int,
     val user: User,
     var content: String?,
+    val comments: List<Comment> = emptyList(),
 
-    @SerializedName("media_url") // Те, що приходить від Django
-    var mediaUrl: String,       // Те, що ти використовуєш у Kotlin
+    @SerializedName("media_url")
+    var mediaUrl: String,
 
     @SerializedName("likes_count")
     var likesCount: Int,

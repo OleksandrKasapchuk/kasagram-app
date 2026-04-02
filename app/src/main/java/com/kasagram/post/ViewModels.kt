@@ -53,6 +53,29 @@ class PostViewModel : ViewModel() {
     }
 }
 
+class PostDetailViewModel: ViewModel() {
+    var post by mutableStateOf<Post?>(null)
+    var comments by mutableStateOf<List<Comment>> (emptyList())
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+
+    fun loadPost(postId: Int) {
+        if (isLoading) return
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = RetrofitClient.postApi.getPostDetail(postId)
+                post = response
+                comments = response.comments ?: emptyList()
+            } catch (e: Exception) {
+                errorMessage = "Помилка: ${e.message}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+}
+
 
 class CreatePostViewModel(application: Application) : AndroidViewModel(application) {
     var isUploading by mutableStateOf(false)

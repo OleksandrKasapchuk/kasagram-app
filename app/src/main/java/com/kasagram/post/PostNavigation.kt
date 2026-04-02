@@ -1,11 +1,15 @@
 package com.kasagram.post
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.kasagram.post.ui.AddPostScreen
 import com.kasagram.post.ui.Index
+import com.kasagram.post.ui.PostDetailScreen
 
 
 fun NavGraphBuilder.postGraph(navController: NavController) {
@@ -36,33 +40,27 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
             }
         )
     }
-//    composable(
-//        route = "post_detail/{postId}",
-//        arguments = listOf(navArgument("postId") { type = NavType.IntType })
-//    ) { backStackEntry ->
-//        // 1. Отримуємо ID з параметрів шляху
-//        val postId = backStackEntry.arguments?.getInt("postId") ?: 0
-//
-//        // 2. Шукаємо пост у нашому списку (як Post.objects.get(pk=postId))
-//        val post = mockPosts.find { it.id == postId }
-//
-//        if (post != null) {
-//            PostDetailScreen(
-//                post = post,
-//                comments = emptyList(), // Поки що пустий список або твої mockComments
-//                onLikeClick = {
-//                    // Логіка лайка (імітація)
-//                    println("Liked post ${post.id}")
-//                },
-//                onDeletePost = {
-//                    mockPosts.remove(post)
-//                    navController.popBackStack()
-//                },
-//                onSendComment = { text, parentId ->
-//                    println("Sending comment: $text to parent: $parentId")
-//                    // Тут буде створення об'єкта Comment і додавання в список
-//                }
-//            )
-//        }
-//    }
+    composable(
+        route = "post_detail/{postId}",
+        arguments = listOf(navArgument("postId") { type = NavType.IntType })
+    ) { backStackEntry ->
+        // 1. Отримуємо ID з параметрів шляху
+        val postId = backStackEntry.arguments?.getInt("postId") ?: 0
+        val viewModel: PostDetailViewModel = viewModel()
+
+        LaunchedEffect(postId) {
+            if (postId != 0) {
+                viewModel.loadPost(postId)
+            }
+        }
+
+        PostDetailScreen(
+            viewModel = viewModel,
+            onLikeClick = { println("Like clicked for post $postId") },
+            onDeletePost = { commentId -> println("Delete clicked for post $commentId") },
+            onSendComment = { text, parentId ->
+                println("Sending: $text (Parent: $parentId)")
+            }
+        )
+    }
 }
