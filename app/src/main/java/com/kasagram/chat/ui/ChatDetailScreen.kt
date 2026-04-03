@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,19 +27,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kasagram.auth.User
 import com.kasagram.chat.Message
-import com.kasagram.chat.MessageViewModel
+import com.kasagram.chat.viewmodel.MessageViewModel
 import com.kasagram.post.ui.MessageInputField
 import com.kasagram.post.ui.components.CustomImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit,onSendMessage: (String) -> Unit , viewModel: MessageViewModel) {
@@ -64,7 +69,17 @@ fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit,onSendMessage: (Str
         ) {
             // Якщо використовуєте reverseLayout, переконайтеся, що пагінація логічно вірна
             items(viewModel.messages) { message ->
-                MessageCard(message)
+                val scope = rememberCoroutineScope()
+                MessageCard(message,
+                    onReplyClick = { parentId ->
+                        scope.launch {
+                            val index = viewModel.messages.indexOfFirst { it.id == parentId }
+                            if (index != -1) {
+                                listState.animateScrollToItem(index)
+
+                            }
+                        }
+                    })
             }
 
             item {
@@ -124,7 +139,7 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
 }
 
 @Composable
-fun MessageCard(message: Message) {
+fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
     // 1. Визначаємо, чи це наше повідомлення
     val isMine = message.isMe
 
@@ -136,10 +151,10 @@ fun MessageCard(message: Message) {
         // Якщо моє — притискаємо вправо (End), якщо чуже — вліво (Start)
         horizontalArrangement = if (isMine) Arrangement.End else Arrangement.Start
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 // Обмежуємо ширину повідомлення, щоб воно не займало весь екран
-                .fillMaxWidth(0.6f)
+                .widthIn(max = LocalConfiguration.current.screenWidthDp.dp * 0.75f)
                 .clip(
                     RoundedCornerShape(
                         topStart = 16.dp,
@@ -156,18 +171,66 @@ fun MessageCard(message: Message) {
                 .padding(12.dp)
         ) {
             Column {
+                if (!message.parentContent.isNullOrEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = 4.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color.Black.copy(alpha = 0.05f))
+                            .clickable { message.parentId?.let {onReplyClick(it) } }
+                            .padding(start = 8.dp)
+                    ) {
+                        // Синя лінія збоку
+                        Box(
+                            modifier = Modifier
+                                .width(3.dp)
+                                .align(Alignment.CenterVertically)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .size(30.dp) // Висота підлаштується під контент
+                        )
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = message.parentUsername ?: "",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = message.parentContent,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
                 Text(
                     text = message.content,
                     color = if (isMine) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp
                 )
-                Text(
-                    text = message.formattedTime,
-                    fontSize = 10.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.align(Alignment.End)
-                )
+                Row(
+                    modifier = Modifier.align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = message.formattedTime,
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+
+                    if (isMine) {
+                        Spacer(Modifier.width(4.dp))
+                        // Галочки: одна — відправлено, дві — прочитано
+                        Text(
+                            text = if (message.isRead) "✓✓" else "✓",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (message.isRead) Color(0xFF4CAF50) else Color.Gray
+                        )
+                    }
+                }
             }
         }
     }

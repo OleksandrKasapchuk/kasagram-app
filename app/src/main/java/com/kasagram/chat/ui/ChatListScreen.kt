@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kasagram.chat.Chat
-import com.kasagram.chat.ChatViewModel
+import com.kasagram.chat.viewmodel.ChatViewModel
 import com.kasagram.post.ui.components.CustomImage
 
 

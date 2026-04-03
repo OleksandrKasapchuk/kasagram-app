@@ -1,6 +1,5 @@
-package com.kasagram.chat
+package com.kasagram.chat.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,90 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kasagram.RetrofitClient
 import com.kasagram.auth.User
+import com.kasagram.chat.Message
+import com.kasagram.chat.data.ChatWebSocketManager
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
 import org.json.JSONObject
 
 
-class ChatViewModel : ViewModel() {
-    var chats by mutableStateOf<List<Chat>>(emptyList())
-    var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
-
-    private var nextPageUrl: String? = null
-    private var currentPage = 1
-
-    fun fetchChats(isFirstPage: Boolean = true) {
-        if (isLoading) return
-        if (!isFirstPage && nextPageUrl == null) return // Більше немає що вантажити
-
-        viewModelScope.launch {
-            isLoading = true
-            try {
-                val pageToLoad = if (isFirstPage) 1 else currentPage + 1
-                val response = RetrofitClient.сhatApi.getChats(pageToLoad)
-
-                chats = if (isFirstPage) {
-                    response.results
-                } else {
-                    chats + response.results // Додаємо нові пости до старих
-                }
-
-                nextPageUrl = response.next
-                currentPage = pageToLoad
-            } catch (e: Exception) {
-                errorMessage = "Could not download chats: ${e.message}"
-            } finally {
-                isLoading = false
-            }
-        }
-    }
-}
-
-
-class ChatWebSocketManager(
-    private val authToken: String,
-    private val onMessageReceived: (String) -> Unit
-) {
-    private val client = OkHttpClient()
-    private var webSocket: WebSocket? = null
-
-    fun connect(roomName: String) {
-        val request = Request.Builder()
-            .url("ws://10.0.2.2:8000/ws/chat/$roomName/") // 10.0.2.2 для емулятора
-            .addHeader("Authorization", "Token $authToken")
-            .build()
-
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                onMessageReceived(text)
-            }
-
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e("WebSocket", "Connection failed: ${t.message}")
-            }
-        })
-    }
-
-    fun sendMessage(messageText: String, username: String, parentId: Int? = null) {
-        val json = JSONObject().apply {
-            put("action", "chat_message")
-            put("message", messageText)
-            put("username", username)
-            parentId?.let { put("parent_id", it) }
-        }
-        webSocket?.send(json.toString())
-    }
-
-    fun disconnect() {
-        webSocket?.close(1000, "Canceled by user")
-        webSocket = null
-    }
-}
 
 class MessageViewModel : ViewModel() {
     var messages by mutableStateOf<List<Message>>(emptyList())
@@ -144,7 +65,6 @@ class MessageViewModel : ViewModel() {
 
         when (type) {
             "user_typing" -> {
-                // Відображаємо статус друку, якщо це не ми
                 if (data.getString("username") != currentUsername) {
                     isPeerTyping = data.getBoolean("typing")
                 }

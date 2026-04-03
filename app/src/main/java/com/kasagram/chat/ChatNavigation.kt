@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.ui.ChatDetailScreen
 import com.kasagram.chat.ui.ChatListScreen
+import com.kasagram.chat.viewmodel.MessageViewModel
 
 
 fun NavGraphBuilder.chatGraph(navController: NavController) {
