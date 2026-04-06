@@ -11,9 +11,10 @@ import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.ui.ChatDetailScreen
 import com.kasagram.chat.ui.ChatListScreen
 import com.kasagram.chat.viewmodel.MessageViewModel
+import com.kasagram.core.viewmodel.GlobalViewModel
 
 
-fun NavGraphBuilder.chatGraph(navController: NavController) {
+fun NavGraphBuilder.chatGraph(navController: NavController, globalViewModel: GlobalViewModel) {
 
     // Групуємо всі маршрути чату
     composable("chat_list") {
@@ -37,13 +38,13 @@ fun NavGraphBuilder.chatGraph(navController: NavController) {
 
         LaunchedEffect(chatId) {
             viewModel.fetchMessages(chatId)
-            viewModel.connectToChat(chatId, token, currentUsername)
+            viewModel.connectToChat(chatId, token)
         }
 
         ChatDetailScreen(chatId = chatId, onUserClick = { userId ->
             navController.navigate("profile/$userId")},
             onSendMessage = { text ->
                 viewModel.sendMessage(text, currentUsername)
-        }, viewModel)
+        }, viewModel, globalViewModel)
     }
 }

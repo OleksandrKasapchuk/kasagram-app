@@ -8,15 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.kasagram.core.ui.NavItem.Add.KasagramBottomBar
 import com.kasagram.auth.authGraph
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.chatGraph
+import com.kasagram.core.ui.NavItem.Add.KasagramBottomBar
+import com.kasagram.core.viewmodel.GlobalViewModel
 import com.kasagram.notification.notificationGraph
 import com.kasagram.post.postGraph
 import com.kasagram.ui.theme.KasagramTheme
@@ -31,6 +34,19 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route ?: "index"
+
+                val globalViewModel: GlobalViewModel = viewModel()
+
+                LaunchedEffect(Unit) {
+                    if (AuthSession.isLoggedIn) {
+                        AuthSession.token?.let { token ->
+                            globalViewModel.connect(token)
+                        }
+                    } else {
+                        globalViewModel.disconnect()
+                    }
+                }
+
                 // 2. КАРКАС (SCAFFOLD)
                 Scaffold(
                     bottomBar = {
@@ -61,7 +77,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             notificationGraph(navController)
                             postGraph(navController)
-                            chatGraph(navController)
+                            chatGraph(navController, globalViewModel)
                             authGraph(navController)
                         }
                     }

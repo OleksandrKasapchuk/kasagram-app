@@ -86,13 +86,28 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Аватар
-            CustomImage(
-                model = chat.participant.avatarUrl,
-                contentDescription = "user avatar",
-                modifier = Modifier.size(50.dp).clip(CircleShape),
-                loadingSize = 20.dp
-            )
+            Box(contentAlignment = Alignment.BottomEnd) {
+                CustomImage(
+                    model = chat.participant.avatarUrl,
+                    contentDescription = "user avatar",
+                    modifier = Modifier.size(50.dp).clip(CircleShape),
+                    loadingSize = 20.dp
+                )
+
+                // Коло статусу (Online/Offline)
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(Color.White) // Обводка
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (chat.participant.isOnline) Color(0xFF4CAF50) // Зелений
+                            else Color.Gray
+                        )
+                )
+            }
 
             Spacer(Modifier.width(12.dp))
 

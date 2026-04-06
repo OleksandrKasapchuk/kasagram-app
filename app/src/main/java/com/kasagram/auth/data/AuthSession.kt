@@ -27,13 +27,14 @@ object AuthSession {
         token = prefs.getString(KEY_TOKEN, null)
         userId = prefs.getInt(KEY_USER_ID, -1)
         username = prefs.getString(KEY_USERNAME, null)
+        isLoggedIn = !token.isNullOrEmpty()
     }
 
     fun updateSession(newToken: String?, newUserId: Int, newUsername: String?) {
         token = newToken
         userId = newUserId
         username = newUsername
-
+        isLoggedIn = !newToken.isNullOrEmpty()
         prefs.edit().apply {
             putString(KEY_TOKEN, newToken)
             putInt(KEY_USER_ID, newUserId)
@@ -41,9 +42,9 @@ object AuthSession {
             apply()
         }
     }
+    var isLoggedIn by mutableStateOf(false)
+        private set
 
-    val isLoggedIn: Boolean
-        get() = !token.isNullOrEmpty()
 
     fun logout() {
         token = null

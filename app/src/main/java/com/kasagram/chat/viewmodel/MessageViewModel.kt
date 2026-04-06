@@ -1,97 +1,78 @@
 package com.kasagram.chat.viewmodel
 
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.core.data.RetrofitClient
 import com.kasagram.auth.User
 import com.kasagram.chat.Message
 import com.kasagram.chat.data.ChatWebSocketManager
+import com.kasagram.core.data.RetrofitClient
+import com.kasagram.core.viewmodel.GlobalViewModel
+import com.kasagram.core.viewmodel.SocketViewModel
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 
-
-class MessageViewModel : ViewModel() {
+class MessageViewModel : SocketViewModel<ChatWebSocketManager>() {
     var messages by mutableStateOf<List<Message>>(emptyList())
     var participant by mutableStateOf<User?>(null)
-    var isLoading by mutableStateOf(false)
     var isEndReached by mutableStateOf(false)
-    var isPeerTyping by mutableStateOf(false) // Стан "друкує..."
-    var errorMessage by mutableStateOf<String?>(null)
+    var isPeerTyping by mutableStateOf(false)
     var myUsername: String = ""
-    private var wsManager: ChatWebSocketManager? = null
 
-    // 1. Початкове завантаження повідомлень через API
+
     fun fetchMessages(chatId: Int, isFirstPage: Boolean = true) {
         if (isLoading || (isEndReached && !isFirstPage)) return
-        viewModelScope.launch {
-            isLoading = true
-            try {
-                val oldestId = if (isFirstPage) null else messages.lastOrNull()?.id
-                val response = RetrofitClient.сhatApi.getMessages(chatId, oldestId)
 
-                if (response.success) {
-                    participant = response.participant
-                    val newMessages = response.messages
-                    if (newMessages.isEmpty()) {
-                        isEndReached = true
-                    } else {
-                        messages = if (isFirstPage) newMessages else messages + newMessages
-                    }
-                }
-            } catch (e: Exception) {
-                errorMessage = "Помилка завантаження: ${e.message}"
-            } finally {
-                isLoading = false
+        launchWithLoading { // Використовуємо функцію з BaseViewModel
+            val oldestId = if (isFirstPage) null else messages.lastOrNull()?.id
+            val response = RetrofitClient.сhatApi.getMessages(chatId, oldestId)
+
+            if (response.success) {
+                participant = response.participant
+                if (response.messages.isEmpty()) isEndReached = true
+                messages = if (isFirstPage) response.messages else messages + response.messages
             }
         }
     }
 
-    // 2. Підключення до WebSocket для реального часу
-    fun connectToChat(chatId: Int, token: String, currentUsername: String) {
-        wsManager = ChatWebSocketManager(token) { jsonString ->
-            // Ця лямбда виконується, коли приходить повідомлення з сервера
-            handleIncomingWsEvent(jsonString, currentUsername)
+    fun connectToChat(chatId: Int, token: String) {
+        if (wsManager != null) {
+            println("WS_LOG: Сокет вже підключений, ігноруємо дублікат")
+            return
         }
-        wsManager?.connect(chatId.toString())
+
+        wsManager = ChatWebSocketManager(token) { json -> handleIncomingEvent(json) }
+        wsManager?.connect("/ws/chat/$chatId/")
     }
 
-    private fun handleIncomingWsEvent(jsonString: String, currentUsername: String) {
-        val data = JSONObject(jsonString)
-        val type = data.optString("type")
+    override fun onCleared() {
+        wsManager?.disconnect()
+        super.onCleared()
+    }
 
-        when (type) {
-            "user_typing" -> {
-                if (data.getString("username") != currentUsername) {
-                    isPeerTyping = data.getBoolean("typing")
-                }
+    fun sendMessage(text: String, username: String, parentId: Int? = null) {
+        wsManager?.sendChatMessage(text, username, parentId)
+    }
+
+    override fun handleIncomingEvent(jsonString: String) {
+        val data = JSONObject(jsonString)
+        when (data.optString("type")) {
+            "user_typing" -> isPeerTyping = data.optBoolean("typing")
+            "chat_message" -> {
+                val newMessage = parseJsonToMessage(data)
+                messages = listOf(newMessage) + messages
             }
             "delete_message" -> {
                 val id = data.getInt("message_id")
                 messages = messages.filter { it.id != id }
             }
-            "chat_message" -> {
-                val newMessage = parseJsonToMessage(data)
-                messages = listOf(newMessage) + messages
-            }
             else -> {
-                println("Unknown type: $type")
+                println("Unknown type: {type}")
             }
         }
-    }
-
-    // 3. Відправка повідомлення через сокет
-    fun sendMessage(text: String, username: String, parentId: Int? = null) {
-        wsManager?.sendChatMessage(text, username, parentId)
-    }
-
-    // 4. Очищення при закритті екрана
-    override fun onCleared() {
-        wsManager?.disconnect()
-        super.onCleared()
     }
 
     private fun parseJsonToMessage(data: JSONObject): Message {
@@ -114,5 +95,16 @@ class MessageViewModel : ViewModel() {
             parentContent = data.optString("parent_content", null),
             parentUsername = data.optString("parent_username", null)
         )
+    }
+
+    fun observeGlobalChanges(globalViewModel: GlobalViewModel) {
+        viewModelScope.launch {
+            globalViewModel.userStatusEvent.collect { (username, isOnline) ->
+                // Якщо цей юзер — той, з ким ми зараз спілкуємося
+                if (participant?.username == username) {
+                    participant = participant?.copy(isOnline = isOnline)
+                }
+            }
+        }
     }
 }

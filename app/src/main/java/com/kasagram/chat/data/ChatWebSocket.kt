@@ -21,4 +21,12 @@ class ChatWebSocketManager(
         }
         sendMessage(json)
     }
+
+    fun sendTypingStatus(isTyping: Boolean) {
+        val json = JSONObject().apply {
+            put("action", "typing")
+            put("typing", isTyping)
+        }
+        sendMessage(json)
+    }
 }

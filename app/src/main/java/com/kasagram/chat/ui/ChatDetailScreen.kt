@@ -41,14 +41,23 @@ import androidx.compose.ui.unit.sp
 import com.kasagram.auth.User
 import com.kasagram.chat.Message
 import com.kasagram.chat.viewmodel.MessageViewModel
+import com.kasagram.core.viewmodel.GlobalViewModel
 import com.kasagram.post.ui.MessageInputField
 import com.kasagram.post.ui.components.CustomImage
 import kotlinx.coroutines.launch
 
 @Composable
-fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit,onSendMessage: (String) -> Unit , viewModel: MessageViewModel) {
+fun ChatDetailScreen(chatId: Int,
+                     onUserClick: (Int) -> Unit,
+                     onSendMessage: (String) -> Unit,
+                     viewModel: MessageViewModel,
+                     globalViewModel: GlobalViewModel
+) {
     val listState = rememberLazyListState()
 
+    LaunchedEffect(Unit) {
+        viewModel.observeGlobalChanges(globalViewModel)
+    }
     // Завантажуємо першу сторінку при вході
     LaunchedEffect(chatId) {
         viewModel.fetchMessages(chatId, isFirstPage = true)
@@ -194,39 +203,8 @@ fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
                 .padding(12.dp)
         ) {
             Column {
-                if (!message.parentContent.isNullOrEmpty() && message.parentContent != "null") {
-                    Row(
-                        modifier = Modifier
-                            .padding(bottom = 4.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(Color.Black.copy(alpha = 0.05f))
-                            .clickable { message.parentId?.let {onReplyClick(it) } }
-                            .padding(start = 8.dp)
-                    ) {
-                        // Синя лінія збоку
-                        Box(
-                            modifier = Modifier
-                                .width(3.dp)
-                                .align(Alignment.CenterVertically)
-                                .background(MaterialTheme.colorScheme.primary)
-                                .size(30.dp) // Висота підлаштується під контент
-                        )
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text(
-                                text = message.parentUsername ?: "",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = message.parentContent,
-                                fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
+                ReplyThumbnail(message, onReplyClick)
+
                 Text(
                     text = message.content,
                     color = if (isMine) MaterialTheme.colorScheme.primary
@@ -254,6 +232,43 @@ fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ReplyThumbnail(message: Message, onReplyClick: (Int) -> Unit){
+    if (!message.parentContent.isNullOrEmpty() && message.parentContent != "null") {
+        Row(
+            modifier = Modifier
+                .padding(bottom = 4.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color.Black.copy(alpha = 0.05f))
+                .clickable { message.parentId?.let {onReplyClick(it) } }
+                .padding(start = 8.dp)
+        ) {
+            // Синя лінія збоку
+            Box(
+                modifier = Modifier
+                    .width(3.dp)
+                    .align(Alignment.CenterVertically)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .size(30.dp) // Висота підлаштується під контент
+            )
+            Column(modifier = Modifier.padding(8.dp)) {
+                Text(
+                    text = message.parentUsername ?: "",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = message.parentContent,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
