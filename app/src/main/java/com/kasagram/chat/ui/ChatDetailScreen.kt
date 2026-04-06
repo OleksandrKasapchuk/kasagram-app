@@ -57,7 +57,7 @@ fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit,onSendMessage: (Str
     Column(modifier = Modifier.fillMaxSize()) {
 
         // 1. Хедер (закріплений зверху)
-        Header(viewModel.participant, onUserClick)
+        Header(viewModel.participant, onUserClick, viewModel)
 
         // 2. Список повідомлень (займає всю вільну вагу між хедером і полем введення)
         LazyColumn(
@@ -110,7 +110,7 @@ fun ChatDetailScreen(chatId: Int, onUserClick: (Int) -> Unit,onSendMessage: (Str
 }
 
 @Composable
-fun Header(participant: User?, onUserClick: (Int) -> Unit) {
+fun Header(participant: User?, onUserClick: (Int) -> Unit, viewModel: MessageViewModel) {
     Column {
         Row(
             modifier = Modifier
@@ -118,12 +118,30 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
                 .fillMaxWidth()
                 .clickable { participant?.let { onUserClick(it.id) } }
         ) {
-            CustomImage(
-                model = participant?.avatarUrl,
-                contentDescription = "Avatar",
-                modifier = Modifier.size(30.dp).clip(CircleShape),
-                loadingSize = 15.dp
-            )
+            Box(contentAlignment = Alignment.BottomEnd) {
+                CustomImage(
+                    model = participant?.avatarUrl,
+                    contentDescription = "Avatar",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape),
+                    loadingSize = 15.dp
+                )
+
+                // Коло статусу (Online/Offline)
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(Color.White) // Обводка
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (participant?.isOnline ?: false) Color(0xFF4CAF50) // Зелений
+                            else Color.Gray
+                        )
+                )
+            }
             Spacer(Modifier.width(8.dp))
             Text(
                 text = participant?.username ?: "",
@@ -133,7 +151,12 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit) {
             )
 
         }
-
+        Text(
+            text=if (viewModel.isPeerTyping) "is typing..." else "",
+            fontSize = 18.sp,
+            color = Color.Cyan,
+            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+        )
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
     }
 }
@@ -171,7 +194,7 @@ fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
                 .padding(12.dp)
         ) {
             Column {
-                if (!message.parentContent.isNullOrEmpty()) {
+                if (!message.parentContent.isNullOrEmpty() && message.parentContent != "null") {
                     Row(
                         modifier = Modifier
                             .padding(bottom = 4.dp)

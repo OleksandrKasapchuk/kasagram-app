@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.RetrofitClient
+import com.kasagram.core.data.RetrofitClient
 import com.kasagram.auth.User
 import com.kasagram.chat.Message
 import com.kasagram.chat.data.ChatWebSocketManager
@@ -73,7 +73,7 @@ class MessageViewModel : ViewModel() {
                 val id = data.getInt("message_id")
                 messages = messages.filter { it.id != id }
             }
-            "chat_message" -> { // ТЕПЕР ОБРОБЛЯЄМО ТІЛЬКИ ЦЕЙ ТИП
+            "chat_message" -> {
                 val newMessage = parseJsonToMessage(data)
                 messages = listOf(newMessage) + messages
             }
@@ -85,7 +85,7 @@ class MessageViewModel : ViewModel() {
 
     // 3. Відправка повідомлення через сокет
     fun sendMessage(text: String, username: String, parentId: Int? = null) {
-        wsManager?.sendMessage(text, username, parentId)
+        wsManager?.sendChatMessage(text, username, parentId)
     }
 
     // 4. Очищення при закритті екрана

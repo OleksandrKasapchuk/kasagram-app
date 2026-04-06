@@ -1,50 +1,24 @@
 package com.kasagram.chat.data
 
-import android.util.Log
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.WebSocket
-import okhttp3.WebSocketListener
+import com.kasagram.core.data.BaseWebSocketManager
 import org.json.JSONObject
 
 
 class ChatWebSocketManager(
-    private val authToken: String,
-    private val onMessageReceived: (String) -> Unit
-) {
-    private val client = OkHttpClient()
-    private var webSocket: WebSocket? = null
+    authToken: String,
+    private val onMsg: (String) -> Unit
+) : BaseWebSocketManager(authToken) {
 
-    fun connect(roomName: String) {
-        val request = Request.Builder()
-            .url("ws://10.0.2.2:8000/ws/chat/$roomName/")
-            .addHeader("Authorization", "Token $authToken")
-            .build()
+    override fun onMessageReceived(text: String) = onMsg(text)
+    override fun onConnectionFailed(t: Throwable) { /* обробка помилки */ }
 
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                onMessageReceived(text)
-            }
-
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e("WebSocket", "Connection failed: ${t.message}")
-            }
-        })
-    }
-
-    fun sendMessage(messageText: String, username: String, parentId: Int? = null) {
+    fun sendChatMessage(message: String, username: String, parentId: Int? = null) {
         val json = JSONObject().apply {
             put("action", "chat_message")
-            put("message", messageText)
+            put("message", message)
             put("username", username)
             parentId?.let { put("parent_id", it) }
         }
-        webSocket?.send(json.toString())
-    }
-
-    fun disconnect() {
-        webSocket?.close(1000, "Canceled by user")
-        webSocket = null
+        sendMessage(json)
     }
 }

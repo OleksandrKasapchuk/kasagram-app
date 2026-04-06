@@ -1,6 +1,6 @@
 package com.kasagram.chat.data
 
-import com.kasagram.PaginatedResponse
+import com.kasagram.core.data.PaginatedResponse
 import com.kasagram.auth.User
 import com.kasagram.chat.Chat
 import com.kasagram.chat.Message

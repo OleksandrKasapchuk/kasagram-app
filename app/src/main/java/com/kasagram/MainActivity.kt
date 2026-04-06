@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.kasagram.NavItem.Add.KasagramBottomBar
+import com.kasagram.core.ui.NavItem.Add.KasagramBottomBar
 import com.kasagram.auth.authGraph
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.chatGraph

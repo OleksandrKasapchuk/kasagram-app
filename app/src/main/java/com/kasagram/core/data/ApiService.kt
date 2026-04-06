@@ -1,8 +1,9 @@
-package com.kasagram
+package com.kasagram.core.data
 
 import com.kasagram.auth.data.AuthApi
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.data.ChatApi
+import com.kasagram.core.Config
 import com.kasagram.notification.data.NotificationApi
 import com.kasagram.post.data.PostApi
 import okhttp3.Interceptor
@@ -13,10 +14,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object RetrofitClient {
-    private const val DEBUG_URL = "http://10.0.2.2:8000/api/"
-    private const val PROD_URL = "https://kasagram.onrender.com/api/"
-
-    private const val IS_DEBUG = true
 
     private val authInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
@@ -24,7 +21,7 @@ object RetrofitClient {
 
         val requestBuilder = originalRequest.newBuilder()
 
-        if (!token.isNullOrBlank()) {
+        if (AuthSession.isLoggedIn) {
             requestBuilder.addHeader("Authorization", "Token $token")
         }
 
@@ -39,10 +36,8 @@ object RetrofitClient {
         }).build()
 
     val retrofit: Retrofit by lazy {
-        val baseUrl = if (IS_DEBUG) DEBUG_URL else PROD_URL
-
         Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(Config.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

@@ -12,7 +12,7 @@ data class User(
     var avatarUrl: String? = null,
 
     @SerializedName("is_online")
-    var isOnline: Boolean? = false,
+    var isOnline: Boolean = false,
 
     @SerializedName("first_name")
     var firstName: String? = null,

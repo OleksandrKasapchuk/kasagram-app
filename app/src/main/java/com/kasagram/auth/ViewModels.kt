@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.RetrofitClient
+import com.kasagram.core.data.RetrofitClient
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.auth.data.LoginRequest
 import com.kasagram.auth.data.RegisterRequest

@@ -29,8 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.kasagram.FormField
-import com.kasagram.GenericFormState
+import com.kasagram.core.ui.FormField
+import com.kasagram.core.ui.GenericFormState
 import com.kasagram.post.ui.components.CustomImage
 
 

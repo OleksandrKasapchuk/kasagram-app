@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.kasagram.FormField
-import com.kasagram.GenericFormState
+import com.kasagram.core.ui.FormField
+import com.kasagram.core.ui.GenericFormState
 import com.kasagram.auth.AuthViewModel
 import com.kasagram.auth.data.LoginRequest
 
