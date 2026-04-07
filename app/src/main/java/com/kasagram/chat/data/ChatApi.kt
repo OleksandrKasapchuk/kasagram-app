@@ -1,9 +1,10 @@
 package com.kasagram.chat.data
 
-import com.kasagram.core.data.PaginatedResponse
 import com.kasagram.auth.User
 import com.kasagram.chat.Chat
 import com.kasagram.chat.Message
+import com.kasagram.core.data.PaginatedResponse
+import kotlinx.serialization.Serializable
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -19,6 +20,7 @@ interface ChatApi {
     ): MessageResponse
 }
 
+@Serializable
 data class MessageResponse(
     val success: Boolean,
     val participant: User,

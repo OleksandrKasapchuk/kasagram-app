@@ -2,6 +2,7 @@ package com.kasagram.post
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,6 +47,10 @@ class PostViewModel : ViewModel() {
                 currentPage = pageToLoad
             } catch (e: Exception) {
                 errorMessage = "Не вдалося завантажити пости: ${e.message}"
+                e.printStackTrace() // ЦЕ ВИВЕДЕ ПОВНУ ПОМИЛКУ В LOGCAT СИНІМ/ЧОРНИМ КОЛЬОРОМ
+                Log.e("MY_DEBUG", "Error type: ${e.javaClass.simpleName}")
+                Log.e("MY_DEBUG", "Error message: ${e.message}")
+                Log.e("MY_DEBUG", "Error cause: ${e.cause}")
             } finally {
                 isLoading = false
             }

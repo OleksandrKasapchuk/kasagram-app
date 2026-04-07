@@ -37,13 +37,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kasagram.chat.Chat
 import com.kasagram.chat.viewmodel.ChatViewModel
+import com.kasagram.core.viewmodel.GlobalViewModel
 import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
-fun ChatListScreen(onChatClick: (Int) -> Unit, viewModel: ChatViewModel = viewModel()) {
+fun ChatListScreen(onChatClick: (Int) -> Unit, viewModel: ChatViewModel = viewModel(), globalViewModel: GlobalViewModel) {
     LaunchedEffect(Unit) {
         viewModel.fetchChats()
+        viewModel.observeGlobalStatus(globalViewModel)
     }
 
     Column (modifier = Modifier.fillMaxSize()) {

@@ -1,37 +1,41 @@
 package com.kasagram.post
 
-import com.google.gson.annotations.SerializedName
 import com.kasagram.auth.User
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 
+@Serializable
 data class Post(
     val id: Int,
     val user: User,
     var content: String?,
+
     val comments: List<Comment> = emptyList(),
 
-    @SerializedName("media_url")
+    @SerialName("media_url")
     var mediaUrl: String,
 
-    @SerializedName("likes_count")
+    @SerialName("likes_count")
     var likesCount: Int,
 
-    @SerializedName("is_liked")
+    @SerialName("is_liked")
     var isLiked: Boolean,
 
-    @SerializedName("date_published")
+    @SerialName("date_published")
     val datePublished: String
 )
 
+@Serializable
 data class Comment(
     val id: Int,
     val user: User,
     val content: String,
     val replies: List<Comment> = emptyList(),
 
-    @SerializedName("date_published")
+    @SerialName("date_published")
     val datePublished: String,
 
-    @SerializedName("parent_id")
+    @SerialName("parent_id")
     val parentId: Int? = null
 )

@@ -58,7 +58,6 @@ fun ChatDetailScreen(chatId: Int,
     LaunchedEffect(Unit) {
         viewModel.observeGlobalChanges(globalViewModel)
     }
-    // Завантажуємо першу сторінку при вході
     LaunchedEffect(chatId) {
         viewModel.fetchMessages(chatId, isFirstPage = true)
     }

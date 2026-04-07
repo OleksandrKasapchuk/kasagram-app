@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.core.data.RetrofitClient
 import com.kasagram.chat.Chat
+import com.kasagram.core.data.RetrofitClient
+import com.kasagram.core.viewmodel.GlobalViewModel
 import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
@@ -39,6 +40,22 @@ class ChatViewModel : ViewModel() {
                 errorMessage = "Could not download chats: ${e.message}"
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    // У ChatViewModel
+    fun observeGlobalStatus(globalViewModel: GlobalViewModel) {
+        viewModelScope.launch {
+            globalViewModel.userStatusEvent.collect { (username, isOnline) ->
+                // Оновлюємо статус у списку чатів ChatViewModel
+                chats = chats.map { chat ->
+                    if (chat.participant.username == username) {
+                        chat.copy(participant = chat.participant.copy(isOnline = isOnline))
+                    } else {
+                        chat
+                    }
+                }
             }
         }
     }

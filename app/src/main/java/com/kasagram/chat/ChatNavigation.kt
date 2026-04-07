@@ -21,7 +21,8 @@ fun NavGraphBuilder.chatGraph(navController: NavController, globalViewModel: Glo
         ChatListScreen(
             onChatClick = { id ->
                 navController.navigate("chat_detail/$id")
-            }
+            },
+            globalViewModel = globalViewModel
         )
     }
 
