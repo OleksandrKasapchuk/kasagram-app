@@ -46,6 +46,9 @@ class MessageViewModel : SocketViewModel<ChatWebSocketManager>() {
 
         wsManager = ChatWebSocketManager(token) { json -> handleIncomingEvent(json) }
         wsManager?.connect("/ws/chat/$chatId/")
+
+        // Відправляємо сигнал "прочитано" (можна з невеликою затримкою або через callback)
+        wsManager?.markAsRead()
     }
 
     override fun onCleared() {

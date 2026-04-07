@@ -21,11 +21,9 @@ class ChatWebSocketManager(
         }
         sendMessage(json)
     }
-
-    fun sendTypingStatus(isTyping: Boolean) {
+    fun markAsRead() {
         val json = JSONObject().apply {
-            put("action", "typing")
-            put("typing", isTyping)
+            put("action", "mark_as_read")
         }
         sendMessage(json)
     }
