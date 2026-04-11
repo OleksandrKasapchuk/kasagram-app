@@ -17,7 +17,7 @@ data class Chat (
 
 @Serializable
 data class Message (
-    val id: Int? = null,
+    val id: Int = -1,
     val user: User? = null,
     val content: String,
     val timestamp: String,

@@ -60,6 +60,10 @@ class MessageViewModel : SocketViewModel<ChatWebSocketManager>() {
         wsManager?.sendChatMessage(text, username, parentId)
     }
 
+    fun deleteMessage(messageId: Int){
+        wsManager?.deleteMessage(messageId)
+    }
+
     override fun handleIncomingEvent(jsonString: String) {
         val data = JSONObject(jsonString)
         when (data.optString("type")) {

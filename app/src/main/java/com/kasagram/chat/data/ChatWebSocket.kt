@@ -21,9 +21,18 @@ class ChatWebSocketManager(
         }
         sendMessage(json)
     }
+
     fun markAsRead() {
         val json = JSONObject().apply {
             put("action", "mark_as_read")
+        }
+        sendMessage(json)
+    }
+
+    fun deleteMessage(messageId: Int) {
+        val json = JSONObject().apply {
+            put("action", "delete")
+            put("message_id", messageId)
         }
         sendMessage(json)
     }

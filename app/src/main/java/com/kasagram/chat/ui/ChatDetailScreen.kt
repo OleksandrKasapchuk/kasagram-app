@@ -1,8 +1,9 @@
 package com.kasagram.chat.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +53,7 @@ import kotlinx.coroutines.launch
 fun ChatDetailScreen(chatId: Int,
                      onUserClick: (Int) -> Unit,
                      onSendMessage: (String) -> Unit,
+                     onDeleteClick: (Int) -> Unit,
                      viewModel: MessageViewModel,
                      globalViewModel: GlobalViewModel
 ) {
@@ -84,10 +88,9 @@ fun ChatDetailScreen(chatId: Int,
                             val index = viewModel.messages.indexOfFirst { it.id == parentId }
                             if (index != -1) {
                                 listState.animateScrollToItem(index)
-
                             }
                         }
-                    })
+                    }, onDeleteClick=onDeleteClick)
             }
 
             item {
@@ -169,18 +172,20 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit, viewModel: MessageVie
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
+fun MessageCard(message: Message, onReplyClick: (Int) -> Unit, onDeleteClick: (Int) -> Unit) {
     // 1. Визначаємо, чи це наше повідомлення
     val isMine = message.isMe
+    var expanded by remember { mutableStateOf(false) } // Чи відкрите меню
+    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current // 1. Отримуємо менеджер
 
     // 2. Використовуємо Row, щоб розставити повідомлення по боках
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
-        // Якщо моє — притискаємо вправо (End), якщо чуже — вліво (Start)
-        horizontalArrangement = if (isMine) Arrangement.End else Arrangement.Start
+        contentAlignment = if (isMine) Alignment.CenterEnd else Alignment.CenterStart
     ) {
         Column(
             modifier = Modifier
@@ -198,6 +203,10 @@ fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
                 .background(
                     if (isMine) MaterialTheme.colorScheme.primaryContainer
                     else MaterialTheme.colorScheme.outline
+                )
+                .combinedClickable(
+                    onClick = { /* наприклад, виділення */ },
+                    onLongClick = { expanded = true }
                 )
                 .padding(12.dp)
         ) {
@@ -231,6 +240,30 @@ fun MessageCard(message: Message, onReplyClick: (Int) -> Unit) {
                         )
                     }
                 }
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+
+                DropdownMenuItem(
+                    text = { Text("Copy Text") },
+                    onClick = {
+                        // 2. Копіюємо текст у буфер
+                        clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(message.content))
+                        expanded = false
+                    }
+                )
+                if (isMine) {
+                    DropdownMenuItem(
+                        text = { Text("Delete", color = Color.Red) },
+                        onClick = {
+                            expanded = false
+                            onDeleteClick(message.id) // Викликаємо видалення
+                        }
+                    )
+                }
+
             }
         }
     }
