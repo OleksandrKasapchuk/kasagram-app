@@ -1,27 +1,31 @@
 package com.kasagram.chat
 
-import com.google.gson.annotations.SerializedName
+
 import com.kasagram.auth.User
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 
+@Serializable
 data class Chat (
     val id: Int,
     val participant: User,
-    val created: String,
-    @SerializedName("last_message") val lastMessage: Message?,
-    @SerializedName("unread_count") val unreadCount: Int
+    @SerialName("last_message") val lastMessage: Message?,
+    @SerialName("unread_count") val unreadCount: Int
 )
 
 
+@Serializable
 data class Message (
-    val id: Int,
-    val user: User,
+    val id: Int = -1,
+    val user: User? = null,
     val content: String,
     val timestamp: String,
-    @SerializedName("formatted_time") val formattedTime: String,
-    @SerializedName("is_read") var isRead: Boolean,
-    @SerializedName("is_user_message") val isUserMessage: Boolean,
-    @SerializedName("parent_id") val parentId: Int?,
-    @SerializedName("parent_content") val parentContent: String?,
-    @SerializedName("parent_username") val parentUsername: String?
+    @SerialName("formatted_time") val formattedTime: String = "",
+    @SerialName("is_read") var isRead: Boolean = false,
+    @SerialName("is_me") val isMe: Boolean,
+    @SerialName("parent_id") val parentId: Int? = null,
+    @SerialName("parent_content") val parentContent: String? = null,
+    @SerialName("parent_username") val parentUsername: String? = null
+
 )

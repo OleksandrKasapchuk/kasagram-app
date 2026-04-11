@@ -3,6 +3,7 @@ package com.kasagram.post.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,17 +43,37 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.kasagram.post.Comment
 import com.kasagram.post.Post
+import com.kasagram.post.PostDetailViewModel
 import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
 fun PostDetailScreen(
-    post: Post,
-    comments: List<Comment>,
+    viewModel: PostDetailViewModel, // Передаємо створену у NavHost в'юмодель
     onLikeClick: () -> Unit,
-    onDeletePost: () -> Unit,
+    onDeletePost: (String) -> Unit,
     onSendComment: (String, Int?) -> Unit
 ) {
+    val post = viewModel.post
+    val isLoading = viewModel.isLoading
+
+    // Центруємо індикатор завантаження
+    if (isLoading && post == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (post != null) {
+        // Передаємо коментарі саме з в'юмоделі
+        PostContent(post, onLikeClick, onDeletePost, onSendComment, viewModel.comments)
+    } else if (viewModel.errorMessage != null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(text = viewModel.errorMessage!!)
+        }
+    }
+}
+
+@Composable
+fun PostContent(post: Post, onLikeClick: () -> Unit, onDeletePost: (String) -> Unit, onSendComment: (String, Int?) -> Unit, comments: List<Comment>) {
     var replyingTo by remember { mutableStateOf<Comment?>(null) }
     var commentText by remember { mutableStateOf("") }
 
@@ -95,6 +117,7 @@ fun PostDetailScreen(
         }
     }
 }
+
 
 @Composable
 fun MessageInputField(

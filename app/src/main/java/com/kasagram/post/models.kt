@@ -1,36 +1,41 @@
 package com.kasagram.post
 
-import com.google.gson.annotations.SerializedName
 import com.kasagram.auth.User
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 
+@Serializable
 data class Post(
     val id: Int,
     val user: User,
     var content: String?,
 
-    @SerializedName("media_url") // Те, що приходить від Django
-    var mediaUrl: String,       // Те, що ти використовуєш у Kotlin
+    val comments: List<Comment> = emptyList(),
 
-    @SerializedName("likes_count")
+    @SerialName("media_url")
+    var mediaUrl: String,
+
+    @SerialName("likes_count")
     var likesCount: Int,
 
-    @SerializedName("is_liked")
+    @SerialName("is_liked")
     var isLiked: Boolean,
 
-    @SerializedName("date_published")
+    @SerialName("date_published")
     val datePublished: String
 )
 
+@Serializable
 data class Comment(
     val id: Int,
     val user: User,
     val content: String,
     val replies: List<Comment> = emptyList(),
 
-    @SerializedName("date_published")
+    @SerialName("date_published")
     val datePublished: String,
 
-    @SerializedName("parent_id")
+    @SerialName("parent_id")
     val parentId: Int? = null
 )

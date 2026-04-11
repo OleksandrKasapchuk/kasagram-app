@@ -1,21 +1,28 @@
 package com.kasagram.chat
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.kasagram.auth.data.AuthSession
 import com.kasagram.chat.ui.ChatDetailScreen
 import com.kasagram.chat.ui.ChatListScreen
+import com.kasagram.chat.viewmodel.MessageViewModel
+import com.kasagram.core.viewmodel.GlobalViewModel
 
 
-fun NavGraphBuilder.chatGraph(navController: NavController) {
+fun NavGraphBuilder.chatGraph(navController: NavController, globalViewModel: GlobalViewModel) {
+
     // Групуємо всі маршрути чату
     composable("chat_list") {
         ChatListScreen(
             onChatClick = { id ->
                 navController.navigate("chat_detail/$id")
-            }
+            },
+            globalViewModel = globalViewModel
         )
     }
 
@@ -23,10 +30,26 @@ fun NavGraphBuilder.chatGraph(navController: NavController) {
         route = "chat_detail/{chatId}",
         arguments = listOf(navArgument("chatId") { type = NavType.IntType })
     ) { backStackEntry ->
-        val chatId = backStackEntry.arguments?.getInt("chatId") ?: -1
+        val chatId = backStackEntry.arguments?.getInt("chatId") ?: 0
+        val viewModel: MessageViewModel = viewModel()
+
+        val token = AuthSession.token ?: ""
+        val currentUsername = AuthSession.username ?: ""
+        viewModel.myUsername = currentUsername // Обов'язково!
+
+        LaunchedEffect(chatId) {
+            viewModel.fetchMessages(chatId)
+            viewModel.connectToChat(chatId, token)
+        }
 
         ChatDetailScreen(chatId = chatId, onUserClick = { userId ->
-            navController.navigate("profile/$userId")
-        })
-        }
+            navController.navigate("profile/$userId")},
+            onSendMessage = { text, parentId ->
+                viewModel.sendMessage(text, currentUsername, parentId)
+            },
+            onDeleteClick = { messageId ->
+                viewModel.deleteMessage(messageId)
+            },
+            viewModel, globalViewModel)
+    }
 }

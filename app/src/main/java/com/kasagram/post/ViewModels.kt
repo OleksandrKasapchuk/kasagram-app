@@ -2,6 +2,7 @@ package com.kasagram.post
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,7 +10,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.RetrofitClient
+import com.kasagram.core.data.RetrofitClient
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -46,6 +47,33 @@ class PostViewModel : ViewModel() {
                 currentPage = pageToLoad
             } catch (e: Exception) {
                 errorMessage = "Не вдалося завантажити пости: ${e.message}"
+                e.printStackTrace() // ЦЕ ВИВЕДЕ ПОВНУ ПОМИЛКУ В LOGCAT СИНІМ/ЧОРНИМ КОЛЬОРОМ
+                Log.e("MY_DEBUG", "Error type: ${e.javaClass.simpleName}")
+                Log.e("MY_DEBUG", "Error message: ${e.message}")
+                Log.e("MY_DEBUG", "Error cause: ${e.cause}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+}
+
+class PostDetailViewModel: ViewModel() {
+    var post by mutableStateOf<Post?>(null)
+    var comments by mutableStateOf<List<Comment>> (emptyList())
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+
+    fun loadPost(postId: Int) {
+        if (isLoading) return
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val response = RetrofitClient.postApi.getPostDetail(postId)
+                post = response
+                comments = response.comments ?: emptyList()
+            } catch (e: Exception) {
+                errorMessage = "Помилка: ${e.message}"
             } finally {
                 isLoading = false
             }

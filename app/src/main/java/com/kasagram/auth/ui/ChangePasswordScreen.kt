@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kasagram.FormField
-import com.kasagram.GenericFormState
+import com.kasagram.core.ui.FormField
+import com.kasagram.core.ui.GenericFormState
 
 
 @Composable

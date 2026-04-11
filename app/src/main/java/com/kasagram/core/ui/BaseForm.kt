@@ -1,4 +1,4 @@
-package com.kasagram
+package com.kasagram.core.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

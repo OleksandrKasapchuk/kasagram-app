@@ -36,13 +36,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kasagram.chat.Chat
-import com.kasagram.chat.ChatViewModel
+import com.kasagram.chat.viewmodel.ChatViewModel
+import com.kasagram.core.viewmodel.GlobalViewModel
 import com.kasagram.post.ui.components.CustomImage
 
+
 @Composable
-fun ChatListScreen(onChatClick: (Int) -> Unit, viewModel: ChatViewModel = viewModel()) {
+fun ChatListScreen(onChatClick: (Int) -> Unit, viewModel: ChatViewModel = viewModel(), globalViewModel: GlobalViewModel) {
     LaunchedEffect(Unit) {
         viewModel.fetchChats()
+        viewModel.observeGlobalStatus(globalViewModel)
     }
 
     Column (modifier = Modifier.fillMaxSize()) {
@@ -85,13 +88,28 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Аватар
-            CustomImage(
-                model = chat.participant.avatarUrl,
-                contentDescription = "user avatar",
-                modifier = Modifier.size(50.dp).clip(CircleShape),
-                loadingSize = 20.dp
-            )
+            Box(contentAlignment = Alignment.BottomEnd) {
+                CustomImage(
+                    model = chat.participant.avatarUrl,
+                    contentDescription = "user avatar",
+                    modifier = Modifier.size(50.dp).clip(CircleShape),
+                    loadingSize = 20.dp
+                )
+
+                // Коло статусу (Online/Offline)
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(Color.White) // Обводка
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (chat.participant.isOnline) Color(0xFF4CAF50) // Зелений
+                            else Color.Gray
+                        )
+                )
+            }
 
             Spacer(Modifier.width(12.dp))
 
@@ -113,7 +131,7 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                     chat.lastMessage?.let { msg ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             // Галочки тільки якщо повідомлення наше
-                            if (msg.isUserMessage) {
+                            if (msg.isMe) {
                                 val icon = if (msg.isRead) Icons.Default.DoneAll else Icons.Default.Check
                                 val color = if (msg.isRead) Color(0xFF4FC3F7) else Color.White // Блакитний якщо прочитано
 
@@ -142,7 +160,7 @@ fun ChatCard(chat: Chat, onChatClick: (Int) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val previewText = if (chat.lastMessage != null) {
-                        val prefix = if (chat.lastMessage.isUserMessage) "You: " else ""
+                        val prefix = if (chat.lastMessage.isMe) "You: " else ""
                         "$prefix${chat.lastMessage.content ?: ""}"
                     } else {
                         "No messages yet"

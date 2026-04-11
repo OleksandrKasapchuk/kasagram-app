@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kasagram.RetrofitClient
+import com.kasagram.core.data.RetrofitClient
 import com.kasagram.auth.data.AuthSession
 import com.kasagram.auth.data.LoginRequest
 import com.kasagram.auth.data.RegisterRequest
@@ -24,7 +24,7 @@ class AuthViewModel : ViewModel() {
                 val response = RetrofitClient.authApi.login(request)
 
                 // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
-                AuthSession.updateSession(response.token, response.userId)
+                AuthSession.updateSession(response.token, response.userId, response.username)
 
                 onSuccess() // Переходимо на головний екран
             } catch (e: Exception) {
@@ -42,7 +42,7 @@ class AuthViewModel : ViewModel() {
                 val response = RetrofitClient.authApi.register(request)
 
                 // ВИКОРИСТОВУЄМО ОНОВЛЕНИЙ МЕТОД ДЛЯ РЕАКТИВНОСТІ
-                AuthSession.updateSession(response.token, response.userId)
+                AuthSession.updateSession(response.token, response.userId, response.username)
 
                 onSuccess() // Переходимо на головний екран
             } catch (e: Exception) {

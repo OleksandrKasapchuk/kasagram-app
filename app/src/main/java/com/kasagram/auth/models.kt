@@ -1,39 +1,45 @@
 package com.kasagram.auth
 
-import com.google.gson.annotations.SerializedName
 import com.kasagram.post.Post
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 data class User(
     val id: Int,
     var username: String,
-    var bio: String?,
+    var bio: String? = null,
 
-    @SerializedName("avatar_url")
-    var avatarUrl: String?,
+    @SerialName("avatar_url")
+    var avatarUrl: String? = null,
 
-    @SerializedName("is_online")
-    var isOnline: Boolean,
+    @SerialName("is_online")
+    var isOnline: Boolean = false,
 
-    @SerializedName("first_name")
-    var firstName: String,
+    @SerialName("first_name")
+    var firstName: String? = null,
 
-    @SerializedName("last_name")
-    var lastName: String,
+    @SerialName("last_name")
+    var lastName: String? = null,
 
-    @SerializedName("last_seen")
-    var lastSeen: String?,
+    @SerialName("last_seen")
+    var lastSeen: String? = null,
 
-    @SerializedName("user_posts")
-    val userPosts: List<Post> = emptyList(), // Список постів від бекенда
-    @SerializedName("posts_count")
+    @kotlinx.serialization.Transient // Це поле буде ігноруватися при десеріалізації JSON
+    @SerialName("user_posts")
+    val userPosts: List<Post> = emptyList(),
+    @SerialName("posts_count")
     val postsCount: Int = 0
 )
 
+
+@Serializable
 data class Subscription(
     val id: Int,
-    @SerializedName("user_from")
+    @SerialName("user_from")
     val userFrom: User, // Хто підписався
-    @SerializedName("user_to")
+    @SerialName("user_to")
     val userTo: User, // На кого підписався
     val created: String
 )

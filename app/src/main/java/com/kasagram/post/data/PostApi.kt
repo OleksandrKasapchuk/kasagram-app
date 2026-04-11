@@ -1,6 +1,6 @@
 package com.kasagram.post.data
 
-import com.kasagram.PaginatedResponse
+import com.kasagram.core.data.PaginatedResponse
 import com.kasagram.post.Post
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

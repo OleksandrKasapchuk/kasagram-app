@@ -18,6 +18,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,15 +29,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kasagram.R
 import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
 fun NotificationListScreen(
-    notifications: List<Notification>,
+    viewModel: NotificationViewModel = viewModel(), // Передаємо в'юмодель
     onUserClick: (Int) -> Unit,
     onNotificationClick: (String) -> Unit
 ) {
+    // Викликаємо завантаження один раз при вході на екран
+    LaunchedEffect(Unit) {
+        viewModel.loadNotifications()
+    }
+
+    val notifications = viewModel.notifications
+
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Notifications",
@@ -45,22 +56,28 @@ fun NotificationListScreen(
             color = MaterialTheme.colorScheme.primary
         )
 
-        LazyColumn {
-            items(notifications) { notification ->
-                NotificationItem(
-                    notification = notification,
-                    onUserClick = onUserClick,
-                    onNotificationClick = onNotificationClick
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
-                )
+        if (notifications.isEmpty()) {
+            // Можна додати Empty State
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No notifications yet")
+            }
+        } else {
+            LazyColumn {
+                items(notifications) { notification ->
+                    NotificationItem(
+                        notification = notification,
+                        onUserClick = onUserClick,
+                        onNotificationClick = onNotificationClick
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)
+                    )
+                }
             }
         }
     }
 }
-
 @Composable
 fun NotificationItem(
     notification: Notification,
@@ -77,10 +94,10 @@ fun NotificationItem(
             )
             .clickable { onNotificationClick(notification.targetUrl) }
             .padding(12.dp),
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
         CustomImage(
-            model =  notification.actor.avatarUrl,
+            model =  notification.actor.avatarUrl?: R.drawable.def_av,
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
