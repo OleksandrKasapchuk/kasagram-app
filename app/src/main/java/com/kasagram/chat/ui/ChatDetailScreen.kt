@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,10 +20,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,12 +56,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatDetailScreen(chatId: Int,
                      onUserClick: (Int) -> Unit,
-                     onSendMessage: (String) -> Unit,
+                     onSendMessage: (String, Int?) -> Unit,
                      onDeleteClick: (Int) -> Unit,
                      viewModel: MessageViewModel,
                      globalViewModel: GlobalViewModel
 ) {
     val listState = rememberLazyListState()
+    var replyMessage by remember {  mutableStateOf<Message?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.observeGlobalChanges(globalViewModel)
@@ -90,7 +95,9 @@ fun ChatDetailScreen(chatId: Int,
                                 listState.animateScrollToItem(index)
                             }
                         }
-                    }, onDeleteClick=onDeleteClick)
+                    },
+                    onReplySelected = { replyMessage = it },
+                    onDeleteClick=onDeleteClick)
             }
 
             item {
@@ -105,14 +112,42 @@ fun ChatDetailScreen(chatId: Int,
                 }
             }
         }
+        // --- ПАНЕЛЬ РЕПЛАЮ (Аналог твого reply-preview) ---
+        replyMessage?.let { msg ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Синя смужка зліва
+                Box(modifier = Modifier.width(4.dp).height(40.dp).background(Color.Blue))
+                Spacer(Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "Replying to ${msg.user?.username}", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text(text = msg.content, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                }
+
+                // Кнопка закриття (cancelMessageReply)
+                androidx.compose.material3.IconButton(onClick = { replyMessage = null }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close"
+                    )
+                }
+            }
+        }
         var chatMessage by remember { mutableStateOf("") }
         MessageInputField(
             value = chatMessage,
             onValueChange = { chatMessage = it },
             onSendClick = {
                 if (chatMessage.isNotBlank()) {
-                    onSendMessage(chatMessage)
-                    chatMessage = "" // Очищаємо поле після відправки
+                    onSendMessage(chatMessage, replyMessage?.id)
+                    chatMessage = ""
+                    replyMessage = null
                 }
             },
             placeholder = "Message..."
@@ -174,11 +209,12 @@ fun Header(participant: User?, onUserClick: (Int) -> Unit, viewModel: MessageVie
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MessageCard(message: Message, onReplyClick: (Int) -> Unit, onDeleteClick: (Int) -> Unit) {
+fun MessageCard(message: Message, onReplyClick: (Int) -> Unit, onDeleteClick: (Int) -> Unit, onReplySelected: (Message) -> Unit) {
     // 1. Визначаємо, чи це наше повідомлення
     val isMine = message.isMe
     var expanded by remember { mutableStateOf(false) } // Чи відкрите меню
     val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current // 1. Отримуємо менеджер
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // 2. Використовуємо Row, щоб розставити повідомлення по боках
     Box(
@@ -245,12 +281,21 @@ fun MessageCard(message: Message, onReplyClick: (Int) -> Unit, onDeleteClick: (I
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
+                DropdownMenuItem(
+                    text = { Text("Reply") },
+                    onClick = {
+                        onReplySelected(message)
+                        expanded = false
+                    }
+                )
 
                 DropdownMenuItem(
-                    text = { Text("Copy Text") },
+                    text = { Text("Copy") },
                     onClick = {
                         // 2. Копіюємо текст у буфер
                         clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(message.content))
+                        clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(message.content))
+                        android.widget.Toast.makeText(context, "Copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
                         expanded = false
                     }
                 )

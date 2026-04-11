@@ -44,8 +44,8 @@ fun NavGraphBuilder.chatGraph(navController: NavController, globalViewModel: Glo
 
         ChatDetailScreen(chatId = chatId, onUserClick = { userId ->
             navController.navigate("profile/$userId")},
-            onSendMessage = { text ->
-                viewModel.sendMessage(text, currentUsername)
+            onSendMessage = { text, parentId ->
+                viewModel.sendMessage(text, currentUsername, parentId)
             },
             onDeleteClick = { messageId ->
                 viewModel.deleteMessage(messageId)
