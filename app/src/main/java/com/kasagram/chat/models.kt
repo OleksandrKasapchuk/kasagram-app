@@ -21,7 +21,7 @@ data class Message (
     val user: User? = null,
     val content: String,
     val timestamp: String,
-    @SerialName("formatted_time") val formattedTime: String,
+    @SerialName("formatted_time") val formattedTime: String = "",
     @SerialName("is_read") var isRead: Boolean = false,
     @SerialName("is_me") val isMe: Boolean,
     @SerialName("parent_id") val parentId: Int? = null,

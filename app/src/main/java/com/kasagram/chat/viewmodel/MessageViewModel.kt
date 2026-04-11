@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.kasagram.auth.User
 import com.kasagram.chat.Message
 import com.kasagram.chat.data.ChatWebSocketManager
+import com.kasagram.core.bool
 import com.kasagram.core.data.RetrofitClient
+import com.kasagram.core.int
+import com.kasagram.core.str
 import com.kasagram.core.viewmodel.GlobalViewModel
 import com.kasagram.core.viewmodel.SocketViewModel
 import kotlinx.coroutines.launch
-import org.json.JSONObject
+import kotlinx.serialization.json.decodeFromJsonElement
 
 
 class MessageViewModel : SocketViewModel<ChatWebSocketManager>() {
@@ -65,43 +68,37 @@ class MessageViewModel : SocketViewModel<ChatWebSocketManager>() {
     }
 
     override fun handleIncomingEvent(jsonString: String) {
-        val data = JSONObject(jsonString)
-        when (data.optString("type")) {
-            "user_typing" -> isPeerTyping = data.optBoolean("typing")
+        val parser = RetrofitClient.json // Json конфіг
+        val data = parser.parseToJsonElement(jsonString)
+
+        when (data.str("type")) {
+            "user_typing" -> isPeerTyping = data.bool("typing")
+            "messages_read" -> {
+                if (!data.bool("is_me"))
+                    messages = messages.map { message ->
+                        if (message.isMe && !message.isRead) {
+                            message.copy(isRead = true)
+                        } else {
+                            message
+                        }
+                    }
+            }
             "chat_message" -> {
-                val newMessage = parseJsonToMessage(data)
-                messages = listOf(newMessage) + messages
+                try {
+                    val newMessage = parser.decodeFromJsonElement<Message>(data)
+                    messages = listOf(newMessage) + messages
+                } catch (e: Exception) {
+                    println("WS_LOG: Error parsing message: ${e.message}")
+                }
             }
             "delete_message" -> {
-                val id = data.getInt("message_id")
+                val id = data.int("message_id")
                 messages = messages.filter { it.id != id }
             }
             else -> {
                 println("Unknown type: {type}")
             }
         }
-    }
-
-    private fun parseJsonToMessage(data: JSONObject): Message {
-        // Створюємо об'єкт User для повідомлення
-        val sender = User(
-            id = 0, // ID можна не передавати через сокет, якщо воно не критичне для UI
-            username = data.optString("username"),
-            avatarUrl = null // Або додай у Django Consumer передачу аватара
-        )
-
-        return Message(
-            id = data.optInt("message_id"),
-            user = sender,
-            content = data.optString("message"),
-            timestamp = "", // Можна залишити пустим, бо ми використовуємо formattedTime
-            formattedTime = data.optString("timestamp"), // У тебе в Django це '14:30'
-            isRead = false,
-            isMe = data.optString("username") == myUsername, // Django передає 'is_me'
-            parentId = if (data.isNull("parent_id")) null else data.optInt("parent_id"),
-            parentContent = data.optString("parent_content", null),
-            parentUsername = data.optString("parent_username", null)
-        )
     }
 
     fun observeGlobalChanges(globalViewModel: GlobalViewModel) {

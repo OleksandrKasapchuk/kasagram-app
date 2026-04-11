@@ -19,7 +19,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 object RetrofitClient {
 
-    private val json = Json {
+    val json = Json {
         ignoreUnknownKeys = true // НЕ падати, якщо бекенд прислав нове поле
         coerceInputValues = true // Підставляти default values, якщо прийшов null або поле відсутнє
         isLenient = true         // Бути лояльним до нестандартних форматів
