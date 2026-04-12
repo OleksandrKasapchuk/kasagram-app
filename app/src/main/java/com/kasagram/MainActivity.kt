@@ -37,11 +37,9 @@ class MainActivity : ComponentActivity() {
 
                 val globalViewModel: GlobalViewModel = viewModel()
 
-                LaunchedEffect(Unit) {
+                LaunchedEffect(AuthSession.isLoggedIn) {
                     if (AuthSession.isLoggedIn) {
-                        AuthSession.token?.let { token ->
-                            globalViewModel.connect(token)
-                        }
+                        AuthSession.token?.let { globalViewModel.connect(it) }
                     } else {
                         globalViewModel.disconnect()
                     }
@@ -55,10 +53,14 @@ class MainActivity : ComponentActivity() {
                             unreadCount = 0,
                             currentRoute = currentRoute,
                             onNavigate = { route ->
-                                navController.navigate(route) {
-                                    // Щоб не накопичувати купу сторінок в пам'яті:
-                                    popUpTo(navController.graph.startDestinationId)
-                                    launchSingleTop = true
+                                if (route == "logout") {
+                                    AuthSession.logout()
+                                    navController.navigate("login") { popUpTo(0) }
+                                } else {
+                                    navController.navigate(route) {
+                                        popUpTo(navController.graph.startDestinationId)
+                                        launchSingleTop = true
+                                    }
                                 }
                             }
                         )
@@ -78,7 +80,12 @@ class MainActivity : ComponentActivity() {
                             notificationGraph(navController)
                             postGraph(navController)
                             chatGraph(navController, globalViewModel)
-                            authGraph(navController)
+                            authGraph(navController, onLogout = { // Створюємо одну спільну логіку
+                                AuthSession.logout()
+                                navController.navigate("login") {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            })
                         }
                     }
                 }

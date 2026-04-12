@@ -8,14 +8,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.kasagram.auth.data.AuthSession
 import com.kasagram.auth.ui.ChangePasswordScreen
 import com.kasagram.auth.ui.LoginScreen
 import com.kasagram.auth.ui.ProfileScreen
 import com.kasagram.auth.ui.RegisterScreen
 
 
-fun NavGraphBuilder.authGraph(navController: NavController) {
+fun NavGraphBuilder.authGraph(navController: NavController, onLogout: () -> Unit) {
     composable(
         route = "profile/{userId}",
         arguments = listOf(navArgument("userId") { type = NavType.IntType })
@@ -35,7 +34,7 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
             CircularProgressIndicator()
         } else {
             viewModel.userState?.let { user ->
-                ProfileScreen(user = user, user.userPosts, navController)
+                ProfileScreen(user = user, user.userPosts, navController, onLogout)
             }
         }
     }
@@ -53,14 +52,4 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
         )
     }
     composable("change_password") { ChangePasswordScreen() }
-    
-    composable("logout") {
-        LaunchedEffect(Unit) {
-            AuthSession.logout()
-            navController.navigate("login") {
-                // Очищаємо всю історію переходів, щоб не можна було натиснути "назад"
-                popUpTo(0) { inclusive = true }
-            }
-        }
-    }
 }

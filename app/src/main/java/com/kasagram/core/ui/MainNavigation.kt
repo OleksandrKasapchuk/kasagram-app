@@ -3,7 +3,6 @@ package com.kasagram.core.ui
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Login
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
@@ -17,7 +16,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.kasagram.auth.data.AuthSession
 
 // Описуємо пункт меню як об'єкт
@@ -50,14 +48,14 @@ fun KasagramBottomBar(
 ) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background,
-        tonalElevation = 8.dp
     ) {
         // Завжди показуємо Home
         NavigationBarItem(
             selected = currentRoute == NavItem.Home.route,
             onClick = { onNavigate(NavItem.Home.route) },
             icon = { Icon(NavItem.Home.icon, contentDescription = null) },
-            label = { Text(NavItem.Home.title) }
+            label = { Text(NavItem.Home.title) },
+            alwaysShowLabel = false
         )
 
         // Завжди показуємо Add
@@ -65,14 +63,16 @@ fun KasagramBottomBar(
             selected = currentRoute == Add.route,
             onClick = { onNavigate(Add.route) },
             icon = { Icon(Add.icon, contentDescription = null) },
-            label = { Text(Add.title) }
+            label = { Text(Add.title) },
+            alwaysShowLabel = false
         )
 
         if (isAuthenticated) {
             NavigationBarItem(
                 selected = currentRoute == Messages.route,
                 onClick = { onNavigate(Messages.route) },
-                icon = { Icon(Messages.icon, contentDescription = null) }
+                icon = { Icon(Messages.icon, contentDescription = null) },
+                alwaysShowLabel = false
             )
 
             NavigationBarItem(
@@ -86,20 +86,16 @@ fun KasagramBottomBar(
                     }) {
                         Icon(NavItem.Notifications.icon, contentDescription = null)
                     }
-                }
+                },
+                alwaysShowLabel = false
             )
 
             // Profile
             NavigationBarItem(
                 selected = currentRoute == Profile.route,
                 onClick = { onNavigate(Profile.route) },
-                icon = { Icon(Profile.icon, contentDescription = null) }
-            )
-            // Logout
-            NavigationBarItem(
-                selected = currentRoute == "logout",
-                onClick = { onNavigate("logout") },
-                icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null) }
+                icon = { Icon(Profile.icon, contentDescription = null) },
+                alwaysShowLabel = false
             )
 
         } else {
@@ -107,7 +103,8 @@ fun KasagramBottomBar(
             NavigationBarItem(
                 selected = currentRoute == "login",
                 onClick = { onNavigate("login") },
-                icon = { Icon(Icons.AutoMirrored.Filled.Login, contentDescription = null) }
+                icon = { Icon(Icons.AutoMirrored.Filled.Login, contentDescription = null) },
+                alwaysShowLabel = false
             )
         }
     }

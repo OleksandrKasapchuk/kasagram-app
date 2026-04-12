@@ -34,11 +34,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kasagram.post.Post
 
 
 @Composable
-fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit) {
+fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit, navController: NavController) {
     var isLikedInternal by remember { mutableStateOf(post.isLiked) }
     var likesCountInternal by remember { mutableIntStateOf(post.likesCount) }
 
@@ -99,7 +100,8 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit)
             // Футер: Кнопки взаємодії
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = {
@@ -127,10 +129,12 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit)
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 Text(
-                    text = "💬 Коментувати",
+                    text = "💬 Comment",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = Color.Gray,
+                    modifier = Modifier.clickable{navController.navigate("post_detail/${post.id}")}
                 )
             }
         }

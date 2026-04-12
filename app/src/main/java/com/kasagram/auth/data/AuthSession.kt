@@ -50,6 +50,7 @@ object AuthSession {
         token = null
         userId = -1
         username = null
+        isLoggedIn = false
         prefs.edit().clear().apply()
     }
 }

@@ -91,7 +91,7 @@ fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -
     Scaffold(
         bottomBar = {
             MessageInputField(
-                value = commentText, // Виправлено з chatMessage
+                value = commentText,
                 onValueChange = { commentText = it },
                 onSendClick = {
                     onSendComment(commentText, replyingTo?.id)
@@ -113,12 +113,10 @@ fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -
                 )
             }
 
-//            item {
-//                // Додаємо опис поста та кнопки лайків (PostHeaderSection)
-//                PostHeaderSection(post, onLikeClick, onDeletePost)
-//            }
             item {
-                Row {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(
                         onClick = {
                             // 1. Міняємо стан локально (миттєвий відгук для юзера)

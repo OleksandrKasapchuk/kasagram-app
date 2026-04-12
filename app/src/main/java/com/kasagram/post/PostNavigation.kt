@@ -15,7 +15,7 @@ import com.kasagram.post.ui.PostDetailScreen
 fun NavGraphBuilder.postGraph(navController: NavController) {
     composable("index") {
         val postViewModel: PostViewModel = viewModel()
-        val likeViewModel: LikeViewModel = viewModel ()
+        val likeViewModel: LikeViewModel = viewModel()
         Index(
             viewModel = postViewModel,
             onUserClick = { userId -> navController.navigate("profile/$userId") },
@@ -23,7 +23,7 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
                 likeViewModel.likePost(postId) { response ->
                     postViewModel.updatePostLike(postId, response)
                 }
-            }
+            }, navController
         )
     }
 

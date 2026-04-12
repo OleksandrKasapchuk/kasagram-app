@@ -15,6 +15,10 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,12 +28,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kasagram.auth.User
+import com.kasagram.auth.data.AuthSession
 import com.kasagram.post.Post
 import com.kasagram.post.ui.components.CustomImage
 
 
 @Composable
-fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavController) {
+fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavController, onLogout: () -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier.fillMaxSize().padding(16.dp)
@@ -37,7 +42,7 @@ fun ProfileScreen(user: User, userPosts: List<Post>, navController: NavControlle
         // 1. Додаємо хедер як один елемент, що займає всі 3 колонки (span)
         item(span = { GridItemSpan(3) }) {
             Column {
-                ProfileHeader(user)
+                ProfileHeader(user, onLogout)
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -71,7 +76,8 @@ fun PostThumbnail(post: Post, navController: NavController) {
 }
 
 @Composable
-fun ProfileHeader(user: User){
+fun ProfileHeader(user: User, onLogout: () -> Unit){
+
     // 1. ШАПКА (Аватар + Стати)
     Row(verticalAlignment = Alignment.CenterVertically) {
         CustomImage(
@@ -80,6 +86,16 @@ fun ProfileHeader(user: User){
             modifier = Modifier.size(80.dp).clip(CircleShape),
             loadingSize = 40.dp
         )
+        Spacer(modifier = Modifier.weight(1f)) // Розштовхує аватар і кнопку в різні боки
+
+        if (user.id == AuthSession.userId)
+            androidx.compose.material3.IconButton(onClick = onLogout) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = "Logout",
+                    tint = MaterialTheme.colorScheme.error // Червоний колір для виходу
+                )
+            }
     }
 
     Spacer(modifier = Modifier.height(12.dp))

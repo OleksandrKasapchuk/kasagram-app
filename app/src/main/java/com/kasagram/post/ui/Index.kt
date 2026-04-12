@@ -22,12 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.kasagram.post.Post
 import com.kasagram.post.PostViewModel
 import com.kasagram.post.ui.components.PostCard
 
 @Composable
-fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit) {
+fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit, navController: NavController) {
     // Завантажуємо пости при першому запуску
     LaunchedEffect(Unit) {
         viewModel.fetchPosts()
@@ -39,7 +40,7 @@ fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit, on
         } else if (viewModel.isLoading && viewModel.posts.isEmpty()) {
             Text("Завантаження перших постів...", modifier = Modifier.padding(16.dp))
         } else {
-            PostFeed(posts = viewModel.posts, viewModel = viewModel, onUserClick = onUserClick, onLikeClick)
+            PostFeed(posts = viewModel.posts, viewModel = viewModel, onUserClick = onUserClick, onLikeClick, navController)
         }
     }
 }
@@ -73,7 +74,7 @@ fun Header() {
 }
 
 @Composable
-fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit){
+fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit, navController: NavController){
     val listState = rememberLazyListState()
     LazyColumn(
         state = listState,
@@ -84,7 +85,7 @@ fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> 
         item { Header() }
 
         itemsIndexed(posts) { index, post ->
-            PostCard(post = post, onUserClick, onLikeClick)
+            PostCard(post = post, onUserClick, onLikeClick, navController)
 
             // Якщо це останній елемент у списку — вантажимо наступну сторінку
             if (index == posts.lastIndex) {
