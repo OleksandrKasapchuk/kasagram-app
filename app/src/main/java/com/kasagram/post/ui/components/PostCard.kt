@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,10 +38,15 @@ import com.kasagram.post.Post
 
 
 @Composable
-fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
-    var isLiked by remember { mutableStateOf(post.isLiked) }
-    var likesCount by remember { mutableIntStateOf(post.likesCount) }
+fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit) {
+    var isLikedInternal by remember { mutableStateOf(post.isLiked) }
+    var likesCountInternal by remember { mutableIntStateOf(post.likesCount) }
 
+    // Якщо раптом пост прийшов оновлений ззовні (наприклад, після fetch), оновлюємо локальний стан
+    LaunchedEffect(post.isLiked, post.likesCount) {
+        isLikedInternal = post.isLiked
+        likesCountInternal = post.likesCount
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,28 +104,27 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit) {
                 // НАША ІНТЕРАКТИВНА КНОПКА ЛАЙКА
                 IconButton(
                     onClick = {
-                        // 3. ОНОВЛЮЄМО СТАН ПРИ КЛІКУ
-                        if (isLiked) {
-                            likesCount-- // Якщо був лайк - прибираємо
-                        } else {
-                            likesCount++ // Якщо не було - додаємо
-                        }
-                        isLiked = !isLiked // Перемикаємо стан
+                        // 1. Міняємо стан локально (миттєвий відгук для юзера)
+                        if (isLikedInternal) likesCountInternal-- else likesCountInternal++
+                        isLikedInternal = !isLikedInternal
+
+                        // 2. Викликаємо функцію, яку передали з Index (вона піде в ViewModel)
+                        onLikeClick(post.id)
                     }
                 ) {
                     // 4. ДИЗАЙН КНОПКИ ЗАЛЕЖИТЬ ВІД СТАНУ
                     Icon(
                         // Міняємо іконку (заповнена / контур)
-                        imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        imageVector = if (isLikedInternal) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         // Міняємо колір (AccentRed / сірий)
-                        tint = if (isLiked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
-                        contentDescription = if (isLiked) "Unlike" else "Like"
+                        tint = if (isLikedInternal) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                        contentDescription = if (isLikedInternal) "Unlike" else "Like"
                     )
                 }
 
                 // КІЛЬКІСТЬ ЛАЙКІВ
                 Text(
-                    text = "$likesCount likes",
+                    text = "$likesCountInternal likes",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -27,7 +27,7 @@ import com.kasagram.post.PostViewModel
 import com.kasagram.post.ui.components.PostCard
 
 @Composable
-fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit) {
+fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit) {
     // Завантажуємо пости при першому запуску
     LaunchedEffect(Unit) {
         viewModel.fetchPosts()
@@ -39,7 +39,7 @@ fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit) {
         } else if (viewModel.isLoading && viewModel.posts.isEmpty()) {
             Text("Завантаження перших постів...", modifier = Modifier.padding(16.dp))
         } else {
-            PostFeed(posts = viewModel.posts, viewModel = viewModel, onUserClick = onUserClick)
+            PostFeed(posts = viewModel.posts, viewModel = viewModel, onUserClick = onUserClick, onLikeClick)
         }
     }
 }
@@ -73,7 +73,7 @@ fun Header() {
 }
 
 @Composable
-fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> Unit){
+fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit){
     val listState = rememberLazyListState()
     LazyColumn(
         state = listState,
@@ -84,7 +84,7 @@ fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> 
         item { Header() }
 
         itemsIndexed(posts) { index, post ->
-            PostCard(post = post, onUserClick)
+            PostCard(post = post, onUserClick, onLikeClick)
 
             // Якщо це останній елемент у списку — вантажимо наступну сторінку
             if (index == posts.lastIndex) {

@@ -2,15 +2,15 @@ package com.kasagram.post
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kasagram.core.data.RetrofitClient
+import com.kasagram.core.viewmodel.BaseViewModel
+import com.kasagram.post.data.LikeResponse
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -19,10 +19,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 
-class PostViewModel : ViewModel() {
+class PostViewModel : BaseViewModel() {
     var posts by mutableStateOf<List<Post>>(emptyList())
-    var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
 
     private var nextPageUrl: String? = null
     private var currentPage = 1
@@ -30,54 +28,48 @@ class PostViewModel : ViewModel() {
     fun fetchPosts(isFirstPage: Boolean = true) {
         if (isLoading) return
         if (!isFirstPage && nextPageUrl == null) return // Більше немає що вантажити
+        launchWithLoading {
+            val pageToLoad = if (isFirstPage) 1 else currentPage + 1
+            val response = RetrofitClient.postApi.getPosts(pageToLoad)
 
-        viewModelScope.launch {
-            isLoading = true
-            try {
-                val pageToLoad = if (isFirstPage) 1 else currentPage + 1
-                val response = RetrofitClient.postApi.getPosts(pageToLoad)
-
-                posts = if (isFirstPage) {
-                    response.results
-                } else {
-                    posts + response.results // Додаємо нові пости до старих
-                }
-
-                nextPageUrl = response.next
-                currentPage = pageToLoad
-            } catch (e: Exception) {
-                errorMessage = "Не вдалося завантажити пости: ${e.message}"
-                e.printStackTrace() // ЦЕ ВИВЕДЕ ПОВНУ ПОМИЛКУ В LOGCAT СИНІМ/ЧОРНИМ КОЛЬОРОМ
-                Log.e("MY_DEBUG", "Error type: ${e.javaClass.simpleName}")
-                Log.e("MY_DEBUG", "Error message: ${e.message}")
-                Log.e("MY_DEBUG", "Error cause: ${e.cause}")
-            } finally {
-                isLoading = false
+            posts = if (isFirstPage) {
+                response.results
+            } else {
+                posts + response.results // Додаємо нові пости до старих
             }
+
+            nextPageUrl = response.next
+            currentPage = pageToLoad
+        }
+    }
+
+    fun updatePostLike(postId: Int, response: LikeResponse) {
+        posts = posts.map { post ->
+            if (post.id == postId) {
+                post.copy(isLiked = response.liked, likesCount = response.likesCount)
+            } else post
         }
     }
 }
 
-class PostDetailViewModel: ViewModel() {
+class PostDetailViewModel: BaseViewModel() {
     var post by mutableStateOf<Post?>(null)
     var comments by mutableStateOf<List<Comment>> (emptyList())
-    var isLoading by mutableStateOf(false)
-    var errorMessage by mutableStateOf<String?>(null)
 
     fun loadPost(postId: Int) {
         if (isLoading) return
-        viewModelScope.launch {
-            isLoading = true
-            try {
-                val response = RetrofitClient.postApi.getPostDetail(postId)
-                post = response
-                comments = response.comments ?: emptyList()
-            } catch (e: Exception) {
-                errorMessage = "Помилка: ${e.message}"
-            } finally {
-                isLoading = false
-            }
+        launchWithLoading {
+            val response = RetrofitClient.postApi.getPostDetail(postId)
+            post = response
+            comments = response.comments
         }
+    }
+
+    fun updatePostLike(response: LikeResponse) {
+        post = post?.copy(
+            likesCount = response.likesCount,
+            isLiked = response.liked
+        )
     }
 }
 
@@ -132,5 +124,15 @@ class CreatePostViewModel(application: Application) : AndroidViewModel(applicati
 
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
+    }
+}
+
+
+class LikeViewModel: BaseViewModel() {
+    fun likePost(postId: Int, onResult: (LikeResponse) -> Unit){
+        launchWithLoading {
+            val response = RetrofitClient.postApi.likePost(postId)
+            onResult(response)
+        }
     }
 }

@@ -25,4 +25,7 @@ interface PostApi {
         @Part("content") content: RequestBody,
         @Part media: MultipartBody.Part
     ): Post
+
+    @POST("like/{id}/")
+    suspend fun likePost(@Path("id") id: Int): LikeResponse
 }

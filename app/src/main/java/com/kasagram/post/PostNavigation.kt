@@ -14,12 +14,16 @@ import com.kasagram.post.ui.PostDetailScreen
 
 fun NavGraphBuilder.postGraph(navController: NavController) {
     composable("index") {
-        // Використовуємо функцію viewModel(), а не конструктор PostViewModel()
-        // Це гарантує, що стан постів не зникатиме при навігації
-        val viewModel: PostViewModel = viewModel()
+        val postViewModel: PostViewModel = viewModel()
+        val likeViewModel: LikeViewModel = viewModel ()
         Index(
-            viewModel = viewModel,
-            onUserClick = { userId -> navController.navigate("profile/$userId") }
+            viewModel = postViewModel,
+            onUserClick = { userId -> navController.navigate("profile/$userId") },
+            onLikeClick = { postId ->
+                likeViewModel.likePost(postId) { response ->
+                    postViewModel.updatePostLike(postId, response)
+                }
+            }
         )
     }
 
@@ -46,17 +50,22 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
     ) { backStackEntry ->
         // 1. Отримуємо ID з параметрів шляху
         val postId = backStackEntry.arguments?.getInt("postId") ?: 0
-        val viewModel: PostDetailViewModel = viewModel()
+        val postDetailViewModel: PostDetailViewModel = viewModel()
+        val likeViewModel: LikeViewModel = viewModel()
 
         LaunchedEffect(postId) {
             if (postId != 0) {
-                viewModel.loadPost(postId)
+                postDetailViewModel.loadPost(postId)
             }
         }
 
         PostDetailScreen(
-            viewModel = viewModel,
-            onLikeClick = { println("Like clicked for post $postId") },
+            postDetailViewModel = postDetailViewModel,
+            onLikeClick = { postId ->
+                likeViewModel.likePost(postId) {    response ->
+                    postDetailViewModel.updatePostLike(response)
+                }
+            },
             onDeletePost = { commentId -> println("Delete clicked for post $commentId") },
             onSendComment = { text, parentId ->
                 println("Sending: $text (Parent: $parentId)")

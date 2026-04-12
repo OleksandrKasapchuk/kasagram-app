@@ -49,13 +49,13 @@ import com.kasagram.post.ui.components.CustomImage
 
 @Composable
 fun PostDetailScreen(
-    viewModel: PostDetailViewModel, // Передаємо створену у NavHost в'юмодель
-    onLikeClick: () -> Unit,
+    postDetailViewModel: PostDetailViewModel,
+    onLikeClick: (Int) -> Unit,
     onDeletePost: (String) -> Unit,
     onSendComment: (String, Int?) -> Unit
 ) {
-    val post = viewModel.post
-    val isLoading = viewModel.isLoading
+    val post = postDetailViewModel.post
+    val isLoading = postDetailViewModel.isLoading
 
     // Центруємо індикатор завантаження
     if (isLoading && post == null) {
@@ -64,16 +64,16 @@ fun PostDetailScreen(
         }
     } else if (post != null) {
         // Передаємо коментарі саме з в'юмоделі
-        PostContent(post, onLikeClick, onDeletePost, onSendComment, viewModel.comments)
-    } else if (viewModel.errorMessage != null) {
+        PostContent(post, onLikeClick, onDeletePost, onSendComment, postDetailViewModel.comments)
+    } else if (postDetailViewModel.errorMessage != null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = viewModel.errorMessage!!)
+            Text(text = postDetailViewModel.errorMessage!!)
         }
     }
 }
 
 @Composable
-fun PostContent(post: Post, onLikeClick: () -> Unit, onDeletePost: (String) -> Unit, onSendComment: (String, Int?) -> Unit, comments: List<Comment>) {
+fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -> Unit, onSendComment: (String, Int?) -> Unit, comments: List<Comment>) {
     var replyingTo by remember { mutableStateOf<Comment?>(null) }
     var commentText by remember { mutableStateOf("") }
 

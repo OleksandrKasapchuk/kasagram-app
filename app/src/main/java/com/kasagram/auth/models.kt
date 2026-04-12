@@ -26,7 +26,6 @@ data class User(
     @SerialName("last_seen")
     var lastSeen: String? = null,
 
-    @kotlinx.serialization.Transient // Це поле буде ігноруватися при десеріалізації JSON
     @SerialName("user_posts")
     val userPosts: List<Post> = emptyList(),
     @SerialName("posts_count")
