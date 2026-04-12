@@ -101,7 +101,6 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit)
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // НАША ІНТЕРАКТИВНА КНОПКА ЛАЙКА
                 IconButton(
                     onClick = {
                         // 1. Міняємо стан локально (миттєвий відгук для юзера)

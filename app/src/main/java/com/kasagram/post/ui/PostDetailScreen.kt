@@ -21,6 +21,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +30,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -76,7 +80,14 @@ fun PostDetailScreen(
 fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -> Unit, onSendComment: (String, Int?) -> Unit, comments: List<Comment>) {
     var replyingTo by remember { mutableStateOf<Comment?>(null) }
     var commentText by remember { mutableStateOf("") }
+    var isLikedInternal by remember { mutableStateOf(post.isLiked) }
+    var likesCountInternal by remember { mutableIntStateOf(post.likesCount) }
 
+    // Якщо раптом пост прийшов оновлений ззовні (наприклад, після fetch), оновлюємо локальний стан
+    LaunchedEffect(post.isLiked, post.likesCount) {
+        isLikedInternal = post.isLiked
+        likesCountInternal = post.likesCount
+    }
     Scaffold(
         bottomBar = {
             MessageInputField(
@@ -106,6 +117,35 @@ fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -
 //                // Додаємо опис поста та кнопки лайків (PostHeaderSection)
 //                PostHeaderSection(post, onLikeClick, onDeletePost)
 //            }
+            item {
+                Row {
+                    IconButton(
+                        onClick = {
+                            // 1. Міняємо стан локально (миттєвий відгук для юзера)
+                            if (isLikedInternal) likesCountInternal-- else likesCountInternal++
+                            isLikedInternal = !isLikedInternal
+
+                            // 2. Викликаємо функцію, яку передали з Index (вона піде в ViewModel)
+                            onLikeClick(post.id)
+                        }
+                    ) {
+                        // 4. ДИЗАЙН КНОПКИ ЗАЛЕЖИТЬ ВІД СТАНУ
+                        Icon(
+                            // Міняємо іконку (заповнена / контур)
+                            imageVector = if (isLikedInternal) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            // Міняємо колір (AccentRed / сірий)
+                            tint = if (isLikedInternal) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary,
+                            contentDescription = if (isLikedInternal) "Unlike" else "Like"
+                        )
+                    }
+                    Text(
+                        text = "$likesCountInternal likes",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
 
             items(comments) { comment ->
                 // Виводимо коментар та його відповіді
