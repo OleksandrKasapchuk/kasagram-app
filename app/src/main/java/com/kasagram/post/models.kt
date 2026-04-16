@@ -1,7 +1,6 @@
 package com.kasagram.post
 
 import com.kasagram.auth.User
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
@@ -13,16 +12,9 @@ data class Post(
 
     val comments: List<Comment> = emptyList(),
 
-    @SerialName("media_url")
     var mediaUrl: String,
-
-    @SerialName("likes_count")
     var likesCount: Int,
-
-    @SerialName("is_liked")
     var isLiked: Boolean,
-
-    @SerialName("date_published")
     val datePublished: String
 )
 
@@ -33,9 +25,7 @@ data class Comment(
     val content: String,
     val replies: List<Comment> = emptyList(),
 
-    @SerialName("date_published")
     val datePublished: String,
 
-    @SerialName("parent_id")
     val parentId: Int? = null
 )

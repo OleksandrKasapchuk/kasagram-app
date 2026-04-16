@@ -2,7 +2,6 @@ package com.kasagram.chat
 
 
 import com.kasagram.auth.User
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
@@ -10,8 +9,8 @@ import kotlinx.serialization.Serializable
 data class Chat (
     val id: Int,
     val participant: User,
-    @SerialName("last_message") val lastMessage: Message?,
-    @SerialName("unread_count") val unreadCount: Int
+    val lastMessage: Message?,
+    val unreadCount: Int
 )
 
 
@@ -21,11 +20,10 @@ data class Message (
     val user: User? = null,
     val content: String,
     val timestamp: String,
-    @SerialName("formatted_time") val formattedTime: String = "",
-    @SerialName("is_read") var isRead: Boolean = false,
-    @SerialName("is_me") val isMe: Boolean,
-    @SerialName("parent_id") val parentId: Int? = null,
-    @SerialName("parent_content") val parentContent: String? = null,
-    @SerialName("parent_username") val parentUsername: String? = null
-
+    val formattedTime: String = "",
+    var isRead: Boolean = false,
+    val isMe: Boolean,
+    val parentId: Int? = null,
+    val parentContent: String? = null,
+    val parentUsername: String? = null
 )
