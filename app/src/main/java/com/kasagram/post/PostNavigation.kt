@@ -49,12 +49,12 @@ fun NavGraphBuilder.postGraph(navController: NavController) {
         arguments = listOf(navArgument("postId") { type = NavType.IntType })
     ) { backStackEntry ->
         // 1. Отримуємо ID з параметрів шляху
-        val postId = backStackEntry.arguments?.getInt("postId") ?: 0
+        val postId = backStackEntry.arguments?.getString("postId") ?: ""
         val postDetailViewModel: PostDetailViewModel = viewModel()
         val likeViewModel: LikeViewModel = viewModel()
 
         LaunchedEffect(postId) {
-            if (postId != 0) {
+            if (!postId.isEmpty()) {
                 postDetailViewModel.loadPost(postId)
             }
         }

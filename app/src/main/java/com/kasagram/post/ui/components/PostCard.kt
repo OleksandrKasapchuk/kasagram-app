@@ -39,7 +39,7 @@ import com.kasagram.post.Post
 
 
 @Composable
-fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit, navController: NavController) {
+fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (String) -> Unit, navController: NavController) {
     var isLikedInternal by remember { mutableStateOf(post.isLiked) }
     var likesCountInternal by remember { mutableIntStateOf(post.likesCount) }
 
@@ -110,7 +110,7 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit,
                         isLikedInternal = !isLikedInternal
 
                         // 2. Викликаємо функцію, яку передали з Index (вона піде в ViewModel)
-                        onLikeClick(post.id)
+                        onLikeClick(post.hashId)
                     }
                 ) {
                     // 4. ДИЗАЙН КНОПКИ ЗАЛЕЖИТЬ ВІД СТАНУ
@@ -134,7 +134,7 @@ fun PostCard(post: Post, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit,
                     text = "💬 Comment",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray,
-                    modifier = Modifier.clickable{navController.navigate("post_detail/${post.id}")}
+                    modifier = Modifier.clickable{navController.navigate("post_detail/${post.hashId}")}
                 )
             }
         }

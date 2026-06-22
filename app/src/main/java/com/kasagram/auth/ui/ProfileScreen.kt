@@ -70,7 +70,7 @@ fun PostThumbnail(post: Post, navController: NavController) {
         contentDescription = "post media",
         modifier = Modifier.aspectRatio(1f)
             .fillMaxWidth()
-            .clickable{navController.navigate("post_detail/${post.id}")},
+            .clickable{navController.navigate("post_detail/${post.hashId}")},
         loadingSize = 150.dp
     )
 }

@@ -54,7 +54,7 @@ import com.kasagram.post.ui.components.CustomImage
 @Composable
 fun PostDetailScreen(
     postDetailViewModel: PostDetailViewModel,
-    onLikeClick: (Int) -> Unit,
+    onLikeClick: (String) -> Unit,
     onDeletePost: (String) -> Unit,
     onSendComment: (String, Int?) -> Unit
 ) {
@@ -77,7 +77,7 @@ fun PostDetailScreen(
 }
 
 @Composable
-fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -> Unit, onSendComment: (String, Int?) -> Unit, comments: List<Comment>) {
+fun PostContent(post: Post, onLikeClick: (String) -> Unit, onDeletePost: (String) -> Unit, onSendComment: (String, Int?) -> Unit, comments: List<Comment>) {
     var replyingTo by remember { mutableStateOf<Comment?>(null) }
     var commentText by remember { mutableStateOf("") }
     var isLikedInternal by remember { mutableStateOf(post.isLiked) }
@@ -124,7 +124,7 @@ fun PostContent(post: Post, onLikeClick: (Int) -> Unit, onDeletePost: (String) -
                             isLikedInternal = !isLikedInternal
 
                             // 2. Викликаємо функцію, яку передали з Index (вона піде в ViewModel)
-                            onLikeClick(post.id)
+                            onLikeClick(post.hashId)
                         }
                     ) {
                         // 4. ДИЗАЙН КНОПКИ ЗАЛЕЖИТЬ ВІД СТАНУ

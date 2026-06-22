@@ -28,7 +28,7 @@ import com.kasagram.post.PostViewModel
 import com.kasagram.post.ui.components.PostCard
 
 @Composable
-fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit, navController: NavController) {
+fun Index(viewModel: PostViewModel = viewModel(), onUserClick: (Int) -> Unit, onLikeClick: (String) -> Unit, navController: NavController) {
     // Завантажуємо пости при першому запуску
     LaunchedEffect(Unit) {
         viewModel.fetchPosts()
@@ -74,7 +74,7 @@ fun Header() {
 }
 
 @Composable
-fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> Unit, onLikeClick: (Int) -> Unit, navController: NavController){
+fun PostFeed(posts: List<Post>, viewModel: PostViewModel, onUserClick: (Int) -> Unit, onLikeClick: (String) -> Unit, navController: NavController){
     val listState = rememberLazyListState()
     LazyColumn(
         state = listState,

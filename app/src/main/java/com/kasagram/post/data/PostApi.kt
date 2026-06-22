@@ -17,7 +17,7 @@ interface PostApi {
     suspend fun getPosts(@Query("page") page: Int): PaginatedResponse<Post>
 
     @GET("posts/{id}/")
-    suspend fun getPostDetail(@Path("id") id: Int): Post
+    suspend fun getPostDetail(@Path("id") id: String): Post
 
     @Multipart
     @POST("posts/create/")
@@ -27,5 +27,5 @@ interface PostApi {
     ): Post
 
     @POST("like/{id}/")
-    suspend fun likePost(@Path("id") id: Int): LikeResponse
+    suspend fun likePost(@Path("id") id: String): LikeResponse
 }

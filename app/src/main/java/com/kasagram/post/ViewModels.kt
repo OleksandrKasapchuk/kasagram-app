@@ -43,9 +43,9 @@ class PostViewModel : BaseViewModel() {
         }
     }
 
-    fun updatePostLike(postId: Int, response: LikeResponse) {
+    fun updatePostLike(postId: String, response: LikeResponse) {
         posts = posts.map { post ->
-            if (post.id == postId) {
+            if (post.hashId == postId) {
                 post.copy(isLiked = response.liked, likesCount = response.likesCount)
             } else post
         }
@@ -56,7 +56,7 @@ class PostDetailViewModel: BaseViewModel() {
     var post by mutableStateOf<Post?>(null)
     var comments by mutableStateOf<List<Comment>> (emptyList())
 
-    fun loadPost(postId: Int) {
+    fun loadPost(postId: String) {
         if (isLoading) return
         launchWithLoading {
             val response = RetrofitClient.postApi.getPostDetail(postId)
@@ -129,7 +129,7 @@ class CreatePostViewModel(application: Application) : AndroidViewModel(applicati
 
 
 class LikeViewModel: BaseViewModel() {
-    fun likePost(postId: Int, onResult: (LikeResponse) -> Unit){
+    fun likePost(postId: String, onResult: (LikeResponse) -> Unit){
         launchWithLoading {
             val response = RetrofitClient.postApi.likePost(postId)
             onResult(response)
